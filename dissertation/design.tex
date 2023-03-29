@@ -1,0 +1,130 @@
+\chapter{Design}
+\label{ch:design}
+
+In this chapter, we describe the overall design of our solution to the problem identified in \Cref{ch:introduction}, building on work described in \Cref{ch:background}.
+
+\section{Topic Classification}
+Chapter \ref{ch:background} discussed 4 different models for classifying text into topics: RNN, LSTM, BERT, and RoBERTa.
+The chapter also used intuition to determine which model would be expected to perform best - RoBERTa. The reason being,
+RNNs and LSTMs suffer from being unable to understand context of a whole sentence; they are limited to understanding context
+in a single direction (left to right or right to left). BERT and RoBERTa both use a technique called self-attention to overcome
+this limitation. From observing results in \cite{DBLP:journals/corr/abs-1907-11692} RoBERTa outperforms BERT in most cases.\\
+Building off of the RoBERTa model described in \Cref{ch:background}, we use the model to classify posts into topics.
+The design of this model is relatively simple due to the fact we are performing transfer learning on a pre-trained model.
+\begin{figure}[hbtp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/classification-model.png}
+    \caption{RoBERTa model}
+    \label{fig:roberta}
+\end{figure}
+
+As seen in the diagram, the RoBERTa model has been altered with a new classification layer.
+
+\section{Adding Context}
+\subsection{What is context? and why is it important?}
+As discussed in section \rec{sec:pythia}, context is an important factor in classifying posts. In figure \ref{fig:tweet-example} there
+is a tweet that would be hard to classify with the text alone. The section then goes onto show how adding the image that the tweet
+was posted with (figure \ref{fig:tweet-image}) adds more information to the post and makes it easier to classify.
+\subsection{Methods for adding context}
+There are many ways to add context to a post. Pythia uses Named Entity Recognition (NER) for adding context. In this project the use
+of Optical Character Recognition, Audio Transcription, and Threads/Retweets are explored.
+\subsubsection{Named Entity Recognition - NER}
+\subsubsection{Optical Character Recognition - OCR}
+Images in posts may contain text. This text adds context to the post and can be helpful in classifying the post.
+Using OCR we can extract any text from an image and use it in addition to the text of the post. This should improve the accuracy of the
+model when infographics/text based images are used.
+\subsubsection{Audio Transcription - Wav2Vec}
+Some posts may contain videos. The audio in the videos may contain useful context. Using Wav2Vec we can extract the audio from the video
+in the form of text. This text can be used in addition to the text of the post. This should improve the accuracy of the model when audio
+descriptions/explanations are used in a post.
+\subsubsection{Retweets and Threads}
+Although a post alone may not contain enough context to classify it, there may be a conversation around the post. This conversation 
+would be found in the retweets and threads of the post. If the retweets and threads are discussing the same topic as the post, then the
+extra context given by the retweets and threads can be used to help classify the post.
+
+\subsection{Context Aware Model}
+The context aware model created in this project will use OCR, Wav2Vec, and retweets/threads to add context to posts. The extra text
+extracted from these methods will be added to the text of the post. This will be done before the post is classified. The model will then
+classified with all the additional text.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/context-aware-model.png}
+    \caption{Context Aware Model}
+    \label{fig:context-aware-model}
+\end{figure}
+
+The RoBERTa classification model will be the same as the one designed figure \ref{fig:roberta}. The only difference is the input
+to the model.
+\section{Python Application}
+The Python application is made to show users the topics they are interested in and allows them to compare their interests to the 
+social media site.\\
+The first step of design for the application was to decide what features the application should have. This led to the process of
+requirements analysis.\\
+\subsection{Requirements Analysis}
+\subsubsection{User Stories}
+Before building the application, user stories were created to help guide what features are required. The user stories created were:
+\begin{enumerate}
+    \item As a user, I want to be able to see what topics I see the most on social media/see what topics I am interested in.
+    \item As a user, I want to be able to compare what I see on social media to what other people see on social media.
+    \item As a user, I want to be able to reach out and find posts on topics I am not interested in.
+    \item As a user, I want to be able to see what topics are trending on social media.
+\end{enumerate}
+These stories help set up the requirements for the application.
+\subsubsection{Business Cases}
+The next step is to outline the business cases (methods of solving the problem) for the application. For this project,
+All business cases will be made by the author of this dissertation. The business cases created were:
+\begin{enumerate}
+    \item \textbf{Do Nothing} - This does not improve the problems users face. It is a baseline case.
+    \item \textbf{Chrome Extension} - Allow users to see what percentage of their social media feed is made up of each topic, as well as compare this to live data from the social media platform.
+    \item \textbf{Python Application} - Allow users to see what percentage of their social media feed is made up of each topic, as well as compare this to live data from the social media platform.
+\end{enumerate}
+
+The difference between the chrome extension and the python application is the framework they are built in as well as how
+they are interacted with. The chrome extension would be built in JavaScript, whereas the python application would be built in Python.
+The chrome extension would be accessible from a chrome browser (via the extensions store), whereas the python application would be
+run from a python script.\\
+Although, a chrome extension would be more accessible to users and easier to distribute, it would be more difficult to implement
+as I would have to learn JavaScript and the chrome extension API. I am already familiar with Python and the python libraries used
+in this project.
+\subsubsection{Requirements}
+Using the user stories and chosen business case, the requirements for the application can be determined. \textbf{C} - User Requirement
+\textbf{D} - System Requirements
+\begin{enumerate}
+    \item Functional Requirements
+    \begin{enumerate}
+        \item C) The user should be able to see what topics they see the most on social media/see what topics they are interested in.
+        \begin{enumerate}
+            \item D) The application should be able to get access to the users social media feed via the social media API.
+            \item D) The application should be able to classify the posts in the users social media feed.
+            \item D) The application should be able to calculate the percentage of posts in the users social media feed that are about each topic.
+            \item D) The application should display the top 5 topics the user is interested in as well as their percentage impact on the users social media feed.
+        \end{enumerate}
+        \item C) The user should be able to compare what they see on social media to what other people see on social media.
+        \begin{enumerate}
+            \item D) The application should be able to get access to live posts from the social media API.
+            \item D) The application should be able to classify the live posts from the social media API.
+            \item D) The application should be able to calculate the percentage of live posts that are about each topic.
+            \item D) The application should display the top 5 topics that are trending on social media as well as their percentage impact on the social media platform.
+            \item D) The application should display a similarity metric between the users social media feed and the live posts.
+        \end{enumerate}
+        \item C) The user should be able to reach out and find posts on topics they are not interested in.
+        \begin{enumerate}
+            \item D) The application should store all posts that are classified as a topic to be able to search through them.
+            \item D) The application should store alongside the post the top topic it was classified as.
+            \item D) The application should allow the user to search for posts by topic.
+            \item D) The application should display a random selection of posts that are classified as the topic the user searched for.
+        \end{enumerate}
+    \end{enumerate}
+    \item Non-Functional Requirements
+    \begin{enumerate}
+        \item C) The User Interface should be easy to use within 5 minutes of use.
+        \item C) The User Interface should not be unresponsive for more than 5 seconds.
+        \item C) The User Interface should be suitable for users with no technical experience.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Frontend}
+\subsubsection{User Interface Design}
+\subsection{Backend}
+\subsubsection{API Design}
+\subsubsection{Database Design}

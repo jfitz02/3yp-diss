@@ -1,0 +1,24 @@
+\chapter{Conclusions}
+\label{ch:conclusions}
+
+The project aimed to:
+\begin{itemize}
+    \item Classify social media posts
+    \item Quantify and compare a users social media feed to the rest of the social media site to identify interests
+    \item Build a user interface that allows users to discover what their social media feed says about their interests and how they compare to the rest of the social media site
+    \item Build a user interface to allow users to find posts that are dissimilar to the posts they are shown
+\end{itemize}
+
+It is clear that all of these aims were met. RoBERTa was fine-tuned for the topic classification task. The fine-tuning was done
+using labelled data from Reddit and Wikipedia. Quantification of a set of tweets was done using the mean of the probabilistic outputs
+from our model. A user interface was built that is able to show a comparison of topics between a users social media feed and the rest
+of the social media site. The user interface also allows users to discover posts that are dissimilar to the posts they are shown.\\
+From this, we can conclude that the project was a success.
+\section{Future work}
+\subsection{Advanced Context Input}
+TODO: discuss how we can include context from images and videos better using other Transformer models.
+Can also include other aspects of context including: Author, data from linked articles, etc.
+\subsection{Chrome Extension}
+TODO: take the current Python User interface and turn it into a Chrome extension.
+\subsection{Bias Analysis}
+TODO: develop a definition of bias, and then explain how we can further our model to analyse bias in social media posts.
