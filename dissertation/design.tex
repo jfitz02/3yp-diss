@@ -4,6 +4,7 @@
 In this chapter, we describe the overall design of our solution to the problem identified in \Cref{ch:introduction}, building on work described in \Cref{ch:background}.
 
 \section{Topic Classification}
+\label{sec:topic-classification}
 Chapter \ref{ch:background} discussed 4 different models for classifying text into topics: RNN, LSTM, BERT, and RoBERTa.
 The chapter also used intuition to determine which model would be expected to perform best - RoBERTa. The reason being,
 RNNs and LSTMs suffer from being unable to understand context of a whole sentence; they are limited to understanding context
@@ -57,7 +58,7 @@ The RoBERTa classification model will be the same as the one designed figure \re
 to the model.
 \section{Python Application}
 The Python application is made to show users the topics they are interested in and allows them to compare their interests to the 
-social media site.\\
+social media site. For this project, this application will be made as a prototype to show such a system is feasible.\\
 The first step of design for the application was to decide what features the application should have. This led to the process of
 requirements analysis.\\
 \subsection{Requirements Analysis}
@@ -89,21 +90,21 @@ in this project.
 \subsubsection{Requirements}
 Using the user stories and chosen business case, the requirements for the application can be determined. \textbf{C} - User Requirement
 \textbf{D} - System Requirements
-\begin{enumerate}
+\begin{itemize}
     \item Functional Requirements
     \begin{enumerate}
         \item C) The user should be able to see what topics they see the most on social media/see what topics they are interested in.
         \begin{enumerate}
             \item D) The application should be able to get access to the users social media feed via the social media API.
             \item D) The application should be able to classify the posts in the users social media feed.
-            \item D) The application should be able to calculate the percentage of posts in the users social media feed that are about each topic.
+            \item D) The application should be able to calculate the percentage representation of each topic in a users social media feed.
             \item D) The application should display the top 5 topics the user is interested in as well as their percentage impact on the users social media feed.
         \end{enumerate}
         \item C) The user should be able to compare what they see on social media to what other people see on social media.
         \begin{enumerate}
             \item D) The application should be able to get access to live posts from the social media API.
             \item D) The application should be able to classify the live posts from the social media API.
-            \item D) The application should be able to calculate the percentage of live posts that are about each topic.
+            \item D) The application should be able to calculate the percentage representation of each topic from live social media data.
             \item D) The application should display the top 5 topics that are trending on social media as well as their percentage impact on the social media platform.
             \item D) The application should display a similarity metric between the users social media feed and the live posts.
         \end{enumerate}
@@ -121,10 +122,80 @@ Using the user stories and chosen business case, the requirements for the applic
         \item C) The User Interface should not be unresponsive for more than 5 seconds.
         \item C) The User Interface should be suitable for users with no technical experience.
     \end{enumerate}
-\end{enumerate}
+\end{itemize}
 
 \subsection{Frontend}
 \subsubsection{User Interface Design}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/prototype.png}
+    \caption{Prototype}
+    \label{fig:prototype}
+\end{figure}
+Figure \ref{fig:prototype} shows the drawn out design of the user interface for the prototype. All 3 customer requirements are met
+with this design.\\\\
+\textbf{The user should be able to see what topics they see the most on social media/see what topics they are interested in.}\\
+In the middle display layout there are 10 percentage bars that show the percentage of the users top 5 topics, as well as the percentage
+of the top 5 topics on social media. This identifies what topics the user is interested in.\\\\
+\textbf{The user should be able to compare what they see on social media to what other people see on social media.}\\
+As mentioned above, the user is also able to see the top 5 topics on social media. This allows the user to compare what they see
+compared to what is available. On top of this, the left hand side display is created to show wordclouds of both the users social media feed
+and the live posts. This adds a visual representation to the differences between the users social media feed and the live posts.\\\\
+\textbf{The user should be able to reach out and find posts on topics they are not interested in.}\\
+The right hand side display allows users to select a topic by clicking on the button labelled with the topic. This will then display the text
+ of the 4 posts that are classified as the topic. On top of this, links to the post are provided to allow the user to view the post on the social
+media platform.\\\\
 \subsection{Backend}
+The backend of the application is responsible for making calls to the social media API to get required posts. It is also responsible
+for classifying the posts and storing them in a database. When data is required by the frontend, the backend will retrieve the data
+from the database.\\
 \subsubsection{API Design}
+To hit requirement 1.1 and 2.1, the application needs to be able to access the social medias API. For this project, the social media
+platform that will be used is Twitter.\\
+The module `Tweepy' will be used to access the Twitter API. This module acts as a wrapper for the twitter API and allows for easy
+access to twitter data. The module can be found at \url{https://www.tweepy.org/}. One downside to the twitter API is that the default
+access level does not allow for access to any media that is attached to a tweet. This means that the application will not be able to
+make use of images or videos to add context prior to classification. This was thought of as not being a major issue as the time taken
+to run OCR and Wav2Vec on the media would be too long to be practical.\\
+
+For requirements 1.2 and 2.2, the application needs to be able to classify the posts. As described in section \ref{sec:topic-classification},
+the application will use a fine-tuned RoBERTa model for classification. For each individual post, we will store the `tweetid' and the
+`top topic', it was classified as, in the database. This information is also useful to fulfill requirement 3.1 and 3.2. The chosen database
+for this project is sqlite3. This is a lightweight database that is easy. Due to the nature of this project being a prototype, the database
+will be stored locally on the users machine.\\
+
+Requirements 1.3 and 2.3 require the application to calculate the percentage of posts that are about each topic. To do this, the application
+will take the confidence score (probabilistic weight of output nodes in the classification layer) of each post in a set of posts. Using the
+confidence scores, the application will sum them together then together then convert them to a percentage. This will give the percentage
+representation of each topic. The application will store these values alongside an ID to identify the set of posts.\\
+
+Requirement 3.2 will be achieved by taking the topic input given from the frontend request and searching the database for all posts that
+are primarily classified as that topic. Then, 4 posts will be randomly selected to be sent to the frontend for display.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/backend.png}
+    \caption{Backend Architecture}
+    \label{fig:backend}
+\end{figure}
+Figure \ref{fig:backend} shows the backend architecture. The points raised above can be seen in this diagram along with how the frontend
+interacts with the backend.
 \subsubsection{Database Design}
+The database needs to be able to store the following information:
+\begin{itemize}
+    \item The tweetid of a post.
+    \item The tweet text.
+    \item The tweet link.
+    \item any hashtags in the tweet.
+    \item The top topic a post was classified as.
+    \item The ID of a set of posts.
+    \item The percentage representation of each topic in a set of posts.
+    \item The conversation ID that links posts to its parent post.
+\end{itemize}
+The database will be a sqlite3 database. The schema will be as follows:
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/database.png}
+    \caption{Database Schema}
+    \label{fig:database}
+\end{figure}
+The information required can be accessed using a set of queries. The implementation specifics of these queries will be discussed in Chapter \ref{ch:implementation}.
