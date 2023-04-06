@@ -23,6 +23,12 @@
 \linespread{1.05}
 \usepackage[T1]{fontenc}
 \usepackage{minted}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}}
+\renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}}
+\renewcommand{\labelenumiv}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.\arabic{enumiv}}
 
 \hypersetup{
 	colorlinks=true,
@@ -30,6 +36,15 @@
 	urlcolor=black,
 	citecolor=black
 }
+
+\newlength\myindent
+\setlength\myindent{2em}
+\newcommand\bindent{%
+  \begingroup
+  \setlength{\itemindent}{\myindent}
+  \addtolength{\algorithmicindent}{\myindent}
+}
+\newcommand\eindent{\endgroup}
 
 \setlength{\parindent}{0mm}
 \setlength{\parskip}{\medskipamount}
