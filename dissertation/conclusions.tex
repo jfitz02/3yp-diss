@@ -16,9 +16,40 @@ of the social media site. The user interface also allows users to discover posts
 From this, we can conclude that the project was a success.
 \section{Future work}
 \subsection{Advanced Context Input}
-TODO: discuss how we can include context from images and videos better using other Transformer models.
-Can also include other aspects of context including: Author, data from linked articles, etc.
+During this project the use of context was limited to media that was text based and comments/threads. However, there is a lot more information that can
+be used to improve accuracy of topic classification.\\
+Key information such as author, location, and date can be used to add context to a post. For example, if a post is made by a politician, then the topic is
+likely to be about politics whereas if the post is made by a sports star, then the topic is likely to be about sports. This information in itself will not
+be $100\%$ accurate, as politicians and sport stars can post about other topics as well. However, this information still serves as extra context to the post.
+Including this context, in a similar manner to how we included media and comments/threads, could improve the accuracy of the model.\\\\
+Another method of improving the context aware part of the model is to create a more sophisticated method of incorporating the context data. Currently, the
+media text and comments/threads text is concatenated with the post text. This is a very naive method for adding context. For the media, a possible improvement
+could be to use transfer learning. This would allow us to extract more meaningful data from media and not just the text that is present in it. TODO: talk about 
+video transformers.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/transfer-learning.png}
+    \caption{Transfer Learning with RoBERTa and Video Transformers}
+    \label{fig:transfer-learning}
+\end{figure}
+As seen in Figure \ref{fig:transfer-learning}, The post text is fed through RoBERTa and the media is fed through Video Transformers. The outputs of both models
+are fed through a linear layer seperately, and then concatenated together. This is then fed through a linear layer and a softmax layer to get the final output.
 \subsection{Chrome Extension}
-TODO: take the current Python User interface and turn it into a Chrome extension.
+Originally, the project was going to create a chrome extension. However, due to the time constraints of the project and the fact that I have never worked
+with JavaScript or Chrome extensions before, this was not possible. An extension to this project would be to learn these frameworks and transfer the
+user interface to a chrome extension. This would give the application a better platform to be used on - chrome extension store.
 \subsection{Bias Analysis}
-TODO: develop a definition of bias, and then explain how we can further our model to analyse bias in social media posts.
+When first developing the idea for this project the main aim was to be able to find bias in someones social media feed. The idea came from some reading
+on echo chambers: ``an epistemic environment in which participants encounter beliefs and opinions that coincide with their own'' \cite{echo-chambers}.
+An Echo chamber can cause individuals to be subject to posts that agree with their ideologies, whether or not they are `true' or `representative' of all viewpoints.
+The notion of `bias' comes from the fact the posts that are shown are not truly representative of all viewpoints; the user is only shown posts that agree with their own.\\
+This project is a good baseline for analysis on bias in a users social media feed. This project allows us to identfiy what topics a user is interested in. However, this
+in itself does not gauge whether the feed is bias or not. A user may be interested in a topic and see posts that show all viewpoints on that topic. This is not bias.
+However, if a user is only shown posts about one side/part of the given topic, then this can be construed as bias. For example, take a user who is interested in sports.
+For this user to be non-bias they would need to see posts on a range of sports: Football, Rugby, Cricket, Ahthletics, and so on. However, if they only see posts on Football
+this can be seen as bias towards football.\\
+This project can be extended to find the differences within topics to identify bias that is present in a users social media feed. Some early ideas for this include:
+\begin{itemize}
+    \item Keyword analysis to find subtopics within a Topic.
+    \item Building new models that given an overarching topic can identify subtopics.
+\end{itemize}
