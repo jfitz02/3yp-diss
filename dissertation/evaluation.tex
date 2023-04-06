@@ -5,13 +5,40 @@ Describe the approaches you have used to evaluate that the solution you have des
 
 While you can discuss unit testing etc. you have carried here a little bit, that is the minimum. You should present data here and discuss that. This might include \emph{e.g.} performance data you have obtained from benchmarks, survey results, or application telemetry / analytics. Tables and graphs displaying this data are good.
 
+\section{RNN and LSTM}
+\label{sec:rnn-lstm}
+To analyse the performance of BERT/RoBERTa, the performance of RNN and LSTM models were analysed for comparison. All models
+were trained on the same data discussed in section \ref{sec:data-collection}. There were 2 hypotheses made about RNNs and LSTMs. 
+\begin{enumerate}
+    \item RNNs and LSTMs will perform worse than BERT/RoBERTa
+    \item LSTMs will perform better than RNNs
+\end{enumerate}
+The reasoning behind these hypotheses was discussed in chapter \ref{ch:design}.
+This test was performed to test this hypothesis. Below are the results of The RNN and LSTM models.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/rnn-acc.png}
+    \caption{RNN results}
+    \label{fig:rnn-acc}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/lstm-acc.png}
+    \caption{LSTM results}
+    \label{fig:lstm-acc}
+\end{figure}
+
+Figures \ref{fig:rnn-acc} and \ref{fig:lstm-acc} show the accuracy of the RNN and LSTM models respectively. The results show that
+the LSTM model outperforms the RNN model ($26\%$ accuracy compared to $48\%$ accuracy). This helps validate the second hypothesis
+that LSTMs will outperform RNNs. The other hypothesis will be discussed in section \ref{sec:bert-vs-roberta}.
 \section{BERT vs RoBERTa}
+\label{sec:bert-vs-roberta}
 During development, both BERT and RoBERTa were used to classify the posts into topics.
-BERT and RoBERTa have been compared before in \cite{}. In this paper the results shown were:
+BERT and RoBERTa have been compared before in \cite{DBLP:journals/corr/abs-1907-11692}. In this paper the results shown were:
 \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{../images/roberta-tasks.png}
-    \caption{TODO}
+    \caption{RoBERTa vs BERT - \cite{DBLP:journals/corr/abs-1907-11692}}
     \label{fig:bert-vs-roberta-paper}
 \end{figure}
 
@@ -21,7 +48,7 @@ compared to see which model performed better.
 \begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/bert-vs-roberta.png}
-    \caption{BERT vs RoBERTa}
+    \caption{BERT vs RoBERTa on our problem}
     \label{fig:bert-vs-roberta}
 \end{figure}
 
@@ -30,7 +57,11 @@ random 10\% sample of the training data. The columns of the confusion matrix rep
 ground truth labels. It is obvious from the confusion matrices that BERT did not perform as well as RoBERTa; there are a lot of
 misclassifications. A misclassification can be identified as a cell in the confusion matrix that is not on the diagonal. Comparing this
 to the confusion matrix of RoBERTa, it is clear that RoBERTa performed much better. In fact, RoBERTa is $60\%$ more accurate than BERT
-($43\%$ compared to $69\%$).
+($43\%$ compared to $69\%$).\\
+With respect to the hypotheses made in section \ref{sec:rnn-lstm}, the first hypothesis holds form RoBERTa but not BERT. Recall the LSTM
+model achieved $48\%$ accuracy. BERT could not beat this accuracy but RoBERTa did. This was a surprising result as it was believed
+that BERT would outperform LSTM models. The reason behind this could be that BERT was trained using only 6 epochs, whereas the LSTM model
+was trained using 10 epochs.
 \section{Principal Component Analysis (PCA) of data}
 One thing to note in the RoBERTa confusion matrix in Figure \ref{fig:bert-vs-roberta} is that the model has high concentration
 of misclassifications; the model makes the same misclassification often. After noticing this trend, it was believed that the topics
@@ -84,7 +115,7 @@ From this finding it was concluded that the model was not able to distinguish be
 \subsubsection{Technology vs Computer Science}
 Similarly to the previous comparison, the confusion matrix in Figure \ref{fig:bert-vs-roberta} shows that the model predicts `Technology'
 instead of `Computer Science' 5 times out of 10. The hypothesis was that the topics are very similar. However, the results from the 
-perceptron classifier on the 2 principal components showed a very high accuracy of (TODO). This is not the result expected and caused
+perceptron classifier on the 2 principal components showed a very high accuracy of $82.5\%$. This is not the result expected and caused
 confusion as to why the model was unable to distinguish between the two topics.\\
 To further investigate this, the data was manually inspected to attempt to reach a new hypothesis. This led to the discovery of the 
 unbalanced nature of the data. The `Technology' topic had 10 times more data points than the `Computer Science' topic. This answers why
@@ -94,7 +125,31 @@ It was found that the search query for the `Computer Science' topic yielded no r
 points.\\
 It was decided to remove the computer science topic from the dataset due to the limited dataset.
 \subsubsection{News}
-TODO
+In the confusion matrix for BERT in Figure \ref{fig:bert-vs-roberta}, the model predicts `News' often for `economics', `sports' and `entertainment'.
+PCA analysis was performed on these topics to test their separability.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/econ-news.png}
+    \caption{Economics vs News}
+    \label{fig:econ-news}
+\end{figure} 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/sport-news.png}
+    \caption{Sports vs News}
+    \label{fig:sport-news}
+\end{figure} 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/ent-news.png}
+    \caption{Entertainment vs News}
+    \label{fig:ent-news}
+\end{figure} 
+
+These figures show the PCA of the data for the `Economics', `Sports' and `Entertainment' topics against the `News' topic. The results for each
+of these tests gave a separability rate of $57.5\%$, $57.5\%$ and $50\%$ respectively. These results show that the data is not easy to separate.
+This is not surprising as the `News' topic is a very broad topic and is likely to cover a lot of the other topics.\\
+Because of these findings, it was decided that the News topics should be removed.
 \section{Context}
 \subsection{Media - Images and Videos}
 After implementing OCR and Wav2Vec, the model was tested on a set of 60 hand picked posts (3 for each topic). The updated context aware
