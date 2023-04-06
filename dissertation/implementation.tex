@@ -4,6 +4,129 @@
 In this chapter, we describe the implementation of the design we described in \Cref{ch:design}. You should \textbf{not} describe every line of code in your implementation. Instead, you should focus on the interesting aspects of the implementation: that is, the most challenging parts that would not be obvious to an average Computer Scientist. Include diagrams, short code snippets, etc. for illustration. 
 
 \section{Data Collection}
+To facilitate with the fine-tuning of the BERT/RoBERTa models and the training of the LSTM/RNN models,it was necessary to collect
+a large amount of labelled data. As discussed in \ref{ch:background}, data was collected from Wikipedia and Reddit. Wikipedia was first
+chosen due to the fact it has a large amount of data and all are labelled into categories. The one downside to Wikipedia is the style
+of writing is very formal and factual which does not represent how social media posts are written. This is why Reddit was also used.
+Reddit is a social media platform, whose subreddits give us a large amount of labelled data.\\
+The input data went through a preprocessing step before being used to train the models.\\
+A post/article corresponds to the input data, and the subreddit/wikipedia category corresponds to that inputs label. The data was collected
+using the Reddit API and Wikipedia API.\\
+After collecting all the data, there was roughly 1500 data points for each label (topic).
+\subsection{Preprocessing}
+Some preprocessing was necessary to clean the data. The proprocessing step would remove any punctuation and remove stopwords. This was done
+to reduce the size of the input while keeping the most important words.\\
+In retrospect, it could be possible that the self-attention mechanism of BERT/RoBERTa would be able to learn the context of some stopwords
+and punctuation to improve the accuracy. This has been left as future work.
+\subsection{Wikipedia Data}
+Wikipedia data was colleceted using the Wikipedia API. There exists a python library called `Wikipedia-API' \cite{wikiapi} that acts as a wrapper
+for the Wikipedia API. The library supplies useful functionalities such as:
+\begin{itemize}
+    \item \textbf{WikiAPI.page} - Takes in a string that acts as a query for the API. In this project the query string is ``Categroy:\{topic\}'' which returns a list of articles/subcategories
+    \item \textbf{categorymembers.values()} - given the results of the page query, this function is used to return the articles/subcategories.
+\end{itemize}
+The way WikiAPI.page works means that we may be returned another category. Because of this, a recursive function is used to take the subcategories found and get
+the articles from those subcategories. This could recurse on indefinitely, so a maximum depth of 1 was used to prevent this. A depth of 1 means that we get articles
+from the main category and the subcategories of the main category. The recursive function fetches the titles of articles so they can be queried afterwards.
+\begin{algorithm}
+    \caption{$get\_category\_members$}\label{alg:cat-members}
+\begin{algorithmic}
+    \STATE $\text{\textbf{INPUT}: category, level, max\_level}$
+    \STATE $category\_members \gets \text{list of articles in category}$
+    \bindent
+    \STATE $- \textbf{WikiAPI.page(``Category:\{category\}'').}\textbf{categorymembers.values()}}$
+    \eindent
+    \STATE $titles \gets \text{empty list}$
+    \FOR{$\text{each member in category\_members}$}
+        \IF{$\text{member is a category AND level<max\_level}$}
+            \STATE $titles.append(get\_category\_members(member, level+1, max\_level))$
+        \ELSE
+            \STATE $titles.append(\text{title of member})$
+        \ENDIF
+    \ENDFOR
+    \RETURN titles
+\end{algorithmic}
+\end{algorithm}
+
+Using this function the labelled data can be collected as follows:
+\begin{algorithm}
+    \caption{$\text{Algorithm to Retrieve Wikipedia Data}$}\label{alg:wiki-data}
+    \begin{algorithmic}
+        \STATE $\text{topics} \gets \text{list of topics to collect data for}$
+        \STATE $\text{data} \gets \text{empty list}$
+        \FOR{$\text{each topic in topics}$}
+            \STATE $titles \gets get\_category\_members(topic, 0, 1)$
+            \FOR{$\text{each title in titles}$}
+                \STATE $page \gets \text{WikiAPI.page(title)}$
+                \STATE $text \gets \text{page.text}$
+                \IF{$\text{text is empty}$}
+                    \STATE $text \gets \text{page.summary}$
+                \ENDIF
+                \IF{$\text{text is empty}$}
+                    \STATE $\text{\textbf{CONTINUE}}$
+                \ENDIF
+                \STATE $text \gets \text{preprocess(text)}$
+                \STATE $data.append((page.content, topic))$
+            \ENDFOR
+        \ENDFOR
+        \STATE $\text{Write fata to csv file}$
+    \end{algorithmic}
+\end{algorithm}
+
+The algorithm loops through each topic and gets the article titles from `get\_category\_members`. It then loops through each title, attempts to find text in the page,
+and if it does, it appends the preprocessed text and the topic to the data list. The data list is then written to a csv file.
+\subsection{Reddit Data}
+Reddit data was collected using the Reddit API. Their exists a python library called `PRAW` \cite{praw} that acts as a wrapper for the Reddit API.
+The library provides useful functionalities. The ones used in this project are:
+\begin{itemize}
+    \item \textbf{PRAW.reddit} - Takes in API key and secret to authenticate with Reddit API. Returns a Reddit object that can be used to query the API.
+    \item \textbf{reddit.subreddit} - Takes in a string that acts as a query for the API. In this project the query string is ``\{topic\}''.
+    \item \textbf{subreddit.hot()} - Returns a list of hot posts in the subreddit. Optionally a limit parameter can be set.
+\end{itemize}
+These functions are used to get the data as follows:
+\begin{algorithm}
+    \begin{algorithmic}
+        \STATE $\text{topics} \gets \text{list of topics to collect data for}$
+        \STATE $\text{data} \gets \text{empty list}$
+        \FOR{$\text{each topic in topics}$}
+            \STATE $subreddit \gets \text{reddit.subreddit(topic)}$
+            \STATE $hot \gets \text{subreddit.hot(limit=100)}$
+            \FOR{$\text{each post in hot}$}
+                \STATE $text \gets \text{preprocess(post.title + text)}$
+                \STATE $data.append((text, topic))$
+            \ENDFOR
+        \ENDFOR
+        \STATE $\text{Write fata to csv file}$
+    \end{algorithmic}
+\end{algorithm}
+Fetching Reddit data is much simpler than fetching Wikipedia data due to the fact that when querying a subreddit, only posts are returned and no other subreddits.
+\section{RNN and LSTM}
+Discuss use of Tensorflow and keras for creating models
+Discuss Data preprocessing
+Discuss Sequential model and how it was used
+Discuss difference between SimpleRNN and LSTM
+Discuss why bidirectional was used and how it was used
 \section{BERT}
+Discuss use of BERT and how it was used
+discuss use of tensorflow hub for getting BERT
+Discuss data preprocessing
+discuss dropout layor and dense classification layer
+Discuss Training Arguments
 \section{RoBERTa}
+Discuss use of RoBERTa and how it was used
+Discuss use of huggingface library
+Discuss data preprocessing
+Discuss how training was done using huggingface
+Discuss Training Arguments
+\section{Context Aware Model}
+Discuss use of tweepy library for getting tweets
+Explain process in detail
+Discuss how data was preprocessed for RoBERTa model
+Discuss problems with long processing times
 \section{Python Application}
+Discuss why context model was not used in python application
+Discuss PyQT and how it was used
+Discuss development of UI
+Discuss how the backend was created
+Develop on database architecture to show how data is retrieved
+Show SQL queries used
