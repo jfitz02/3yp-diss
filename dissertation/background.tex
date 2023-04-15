@@ -102,7 +102,8 @@ previous words in the sequence. This is because the hidden state is updated by e
 
 In figure \ref{fig:stm}, we can see how much each `word' in the sequence affects the hidden state over time. For long sequences,
 the hidden state is predominantly affected by the last words in the sequence. This means we lose information about the earlier words
-in the sequence. This could be a problem with our text classification problem as the key information in the text may be in the
+in the sequence. This is caused by vanishing/exploding gradients. Where earlier elements in the sequence have extremely small (or large)
+gradients making backpropogation hard to perform. This could be a problem with our text classification problem as the key information in the text may be in the
 beginning of the sentence. For example: ``Manchester United lost the match 2-1, it was a poor performance but the atmosphere in the
 theatre of dreams was astounding.'' The key information in this sentence is that Manchester United lost the match (meaning the text
 is about sport). However, this information could be lost due to the short-term memory problem. In the case above it is likely
@@ -115,7 +116,16 @@ using 3 memory gates: the input gate, the forget gate and the output gate. These
     \item \textbf{Forget Gate:} The forget gate decides which values from the cell state should be kept.
     \item \textbf{Output Gate:} The output gate decides which values from the cell state should be used to make a prediction.
 \end{itemize}
-TODO: add lstm diagram and explain how the changes solve the short-term memory problem.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../images/lstm.png}
+    \caption{LSTM Cell Architecture}
+    \label{fig:lstm}
+\end{figure}
+The basic intuition behind how LSTM's solve the vanishing gradient problem is that they use gates to pass on information.
+These gates assign a value between 0 and 1 that corresponds to how important the information is. Although this can still
+cause a vanishing gradient, it will be the case that if a gradient is vanished then it's input in the forward direction
+was not important and therefore the gradient will not be important in the backward direction.\\
 
 LSTM's (as well as RNNs) have another problem: they can only process information in one direction at a time. This means that 
 they can only use previous words to understand the current word, or the next words to understand the current word. Bidirectional
@@ -164,7 +174,9 @@ are concatenated together.
     \label{fig:multi-head-attention}
 \end{figure}
 
-TODO: benefits
+Multi-head attention provides a more stable model throughout training. Although deep single-head attention models have been shown
+to be able to outperform shallow multi-head attention models, they require very specific initialisation before training. This is where
+multi-head attention models shine. They are able to converge to a good solution without the need for specific initialisation of weights \cite{multi-head-pros}.
 \subsection{Bidirectional Encoder Representation of Transformers (BERT) - \cite{BERT}}
 BERT is an acronym for Bidirectional Encoder Represtations from Transformers. It's architecture uses several Transformer encoders
 put together. Transformers make use of self-attention to learn contextual representation of words. This solves the problem
@@ -199,13 +211,14 @@ x is the number of topics (so currently 23). The fine-tuning step is trained usi
 The model is trained for 6 epochs, with a batch size of 32. The model is then evaluated on the test set, achieving an accuracy
 of $\approx 42\%$. Please refer to \Cref{sec:evaluation}for a more detailed analysis of the model's performance.
 
-\subsection{Robustly Optimised BERT Approach - RoBERTa}
+\subsection{Robustly Optimised BERT Approach (RoBERTa) - \cite{DBLP:journals/corr/abs-1907-11692}}
 RoBERTa is a variant of BERT that is more efficient and robust. It uses the same architecture as BERT, but with some modifications to 
 the pre-training step. RoBERTa only performs the masked language modelling task, and does not perform the next sentence prediction task.
 On top of this, RoBERTa uses dynamic masking, where during runtime the model randomly masks out words in the sentence, instead of
-masking out words statically (masking the same words for a given sentence).\\
-TODO: add more details from papers about RoBERTa.\\
-The pre-training of RoBERTa was done on a larger corpus of text than BERT. This improved the model's performance.
+masking out words statically (masking the same words for a given sentence). The paper introducing RoBERTa also analysed the effect
+of the pre-training corpus size, batch size, and number of training steps on the model's performance. They found ``t performance can be substantially
+improved by training the model longer, with bigger batches over more data'' \cite{DBLP:journals/corr/abs-1907-11692}\\
+Hence the pre-training of RoBERTa was done on a larger corpus of text than BERT. This improved the model's performance.
 \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{../images/roberta-tasks.png}

@@ -103,11 +103,12 @@ Fetching Reddit data is much simpler than fetching Wikipedia data due to the fac
 \section{RNN and LSTM}
 For creating the RNN and LSTM models, the `tensorflow' and `keras' libraries were used. This was to take advantage of the `tensorflow` GPU support on
 the Department of Computer Science's (DCSs) batch compute system. Also, previous experience with these libraries made it easier to use them.\\
-For both RNN and LSTM models the data was preprocessed in the same way. The data was tokenized using the `Keras Tokenizer` \cite{keras-tokenizer}. TODO:
-what does a tokenizer do?
-The output values were one-hot encoded using pandas `get\_dummies` \cite{pandas-dummies}. The data was split into training and testing sets using the `train\_test\_split`
+For both RNN and LSTM models the data was preprocessed in the same way. The data was tokenized using the `Keras Tokenizer` \cite{keras-tokenizer}. A tokenizer
+is used to take text and convert it into a sequence of meaningful integers. The keras tokenizer has a `fit\_on\_texts` function that takes in a list of texts and
+generates a dictionary of words and their corresponding integer values \cite{tftokenizer}. The output values were one-hot encoded using pandas `get\_dummies`
+\cite{pandas-dummies}. The data was split into training and testing sets using the `train\_test\_split`
 function from `sklearn.model\_selection` \cite{sklearn-split}.\\
-The RNN model was created using the `Sequentia' model from `keras'. A sequential model allows us to build up our model by adding layers. The architecture of the
+The RNN model was created using the `Sequential' model from `keras'. A sequential model allows us to build up our model by adding layers. The architecture of the
 model is as follows:
 \begin{itemize}
     \item \textbf{Embedding} - TODO
