@@ -50,7 +50,23 @@ user interface will also allow users to discover posts that are dissimilar to th
 
 
 \section{Related work}
-TODO: Add LDA
+\subsection{Latent Dirichlet Allocation - \cite{lda}}
+Latent Dirichlet Allocation (LDA) is a generative probabilistic model that is used to classify documents into topics developed
+by David Blei, Andrew Ng and Michael Jordan \cite{lda}. LDA aims to find a set of topics that are representative of the documents
+in a corpus. It does this by assigning each word in a document to a topic and then assessing the following probabilities:
+\begin{itemize}
+    \item $p(\text{topic t} \vert \text{document d})$ - The probability of a topic being assigned to a document
+    \item $p(\text{word w} \vert \text{topic t})$ - The probability of a word being assigned to a topic
+\end{itemize}
+
+LDA then uses Gibbs sampling to assign each word in a document to a topic based on the above probabilities. Below is a
+simplified version of the LDA algorithm to give some intuition on how it works
+\begin{equation}
+    p(\text{word w with topic t}) = p(\text{topic t} \vert \text{document d}) * p(\text{word w} \vert \text{topic t})
+\end{equation}
+
+LDA is a very powerful unsupervised learning technique that can be used to classify documents into topics. However,
+it has some limitations (due to it being an unsupervised technique) that will be discussed in \cref{sec:topic_modelling}.
 \subsection{Pythia - \cite{Pythia}}
 \label{sec:pythia}
 Pythia is an automated system for short text classification. It makes use of Wikipedia structure and articles to identify

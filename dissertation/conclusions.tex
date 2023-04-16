@@ -24,8 +24,10 @@ be $100\%$ accurate, as politicians and sport stars can post about other topics 
 Including this context, in a similar manner to how we included media and comments/threads, could improve the accuracy of the model.\\\\
 Another method of improving the context aware part of the model is to create a more sophisticated method of incorporating the context data. Currently, the
 media text and comments/threads text is concatenated with the post text. This is a very naive method for adding context. For the media, a possible improvement
-could be to use transfer learning. This would allow us to extract more meaningful data from media and not just the text that is present in it. TODO: talk about 
-video transformers.
+could be to use transfer learning. This would allow us to extract more meaningful data from media and not just the text that is present in it. Transformers
+have been used for image/video classification. It could be possible to train a transformer model on a dataset of images/videos
+and then use the output (or possibly a feature vector) of this model as the context for the post. Transfer learning and 
+concatenation of this model output with the RoBERTa model output could be used to create a new `context aware' model.
 \begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{images/transfer-learning.png}

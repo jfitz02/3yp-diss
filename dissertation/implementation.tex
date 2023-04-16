@@ -14,7 +14,7 @@ A post/article corresponds to the input data, and the subreddit/wikipedia catego
 using the Reddit API and Wikipedia API.\\
 After collecting all the data, there was roughly 1500 data points for each label (topic).
 \subsection{Preprocessing}
-Some preprocessing was necessary to clean the data. The proprocessing step would remove any punctuation and remove stopwords. This was done
+Some preprocessing was necessary to clean the data. The preprocessing step would remove any punctuation and remove stopwords. This was done
 to reduce the size of the input while keeping the most important words.\\
 In retrospect, it could be possible that the self-attention mechanism of BERT/RoBERTa would be able to learn the context of some stopwords
 and punctuation to improve the accuracy. This has been left as future work.
@@ -111,19 +111,19 @@ function from `sklearn.model\_selection` \cite{sklearn-split}.\\
 The RNN model was created using the `Sequential' model from `keras'. A sequential model allows us to build up our model by adding layers. The architecture of the
 model is as follows:
 \begin{itemize}
-    \item \textbf{Embedding} - TODO
-    \item \textbf{Bidirectional(SimpleRNN)} - TODO
-    \item \textbf{Dense} - TODO
-    \item \textbf{Dense} - TODO
+    \item \textbf{Embedding} - input\_dim=1000, output\_dim=64, input\_length=1000
+    \item \textbf{Bidirectional(SimpleRNN)} - RNN: units=64
+    \item \textbf{Dense} - units=64, activation='relu'
+    \item \textbf{Dense} - units=20, activation='softmax'
 \end{itemize}
 The model was compiled using the `categorical\_crossentropy` loss function and the `adam` optimizer. The model was trained for 10 epochs with a batch size of 64.\\
 A bidirectional RNN was used to attempt to overcome the problem of unidirectionala context.\\\\
 The LSTM model was created similarly to the RNN model. However, using a bidirectional LSTM instead of a bidirectional RNN. The architecture of the model is as follows:
 \begin{itemize}
-    \item \textbf{Embedding} - TODO
-    \item \textbf{Bidirectional(LSTM)} - TODO
-    \item \textbf{Dense} - TODO
-    \item \textbf{Dense} - TODO
+    \item \textbf{Embedding} - input\_dim=1000, output\_dim=64, input\_length=1000
+    \item \textbf{Bidirectional(LSTM)} - LSTM: units=64
+    \item \textbf{Dense} - units=64, activation='relu'
+    \item \textbf{Dense} - units=20, activation='softmax'
 \end{itemize}
 The same loss function and optimizer were used. The model was trained for 10 epochs with a batch size of 64.
 \section{BERT}
@@ -131,25 +131,27 @@ To get the BERT model, the `tensorflow\_hub' library was used. This library give
 can be imported as follows:
 \begin{algorithm}
     \begin{algorithmic}
-        \STATE preprocess = tensorflow\_hub.KerasLayer(``https://tfhub.dev/tensorflow/bert\_en\_uncased\_preprocess/3'')
-        \STATE bert = tensorflow\_hub.KerasLayer(``https://tfhub.dev/tensorflow/small\_bert/bert\_en\_uncased\_L-4\_H-512\_A-8/1'')
+        \STATE preprocess = tensorflow\_hub.KerasLayer(
+        \bindent
+        \STATE ``https://tfhub.dev/tensorflow/bert\_en\_uncased\_preprocess/3'')
+        \eindent
+        \STATE bert = tensorflow\_hub.KerasLayer(
+        \bindent
+        \STATE``https://tfhub.dev/tensorflow/small\_bert/bert\_en\_uncased\_L-4\_H-512\_A-8/1'')
+        \eindent
     \end{algorithmic}
 \end{algorithm}
 
 When creating the model, these layers can be included in the model architecture. The architecture of the model is as follows:
 \begin{itemize}
-    \item \textbf{Input} - TODO
-    \item \textbf{preprocess} - TODO
-    \item \textbf{bert} - TODO
-    \item \textbf{Dropout} - TODO
-    \item \textbf{Dense} - TODO
+    \item \textbf{Input} - data type: tf.string
+    \item \textbf{preprocess} - \\Found at: https://tfhub.dev/tensorflow/bert\_en\_uncased\_preprocess/3
+    \item \textbf{bert} - \\Found at: ``https://tfhub.dev/tensorflow/small\_bert/bert\_en\_uncased\_L-4\_H-512\_A-8/1''
+    \item \textbf{Dropout} - rate=0.1
+    \item \textbf{Dense} - units=20, activation='sigmoid'
 \end{itemize}
 
 The model was compiled using the `categorical\_crossentropy` loss function and the `adam` optimizer. The model was trained for 6 epochs with a batch size of 32.
-discuss use of tensorflow hub for getting BERT
-Discuss data preprocessing
-discuss dropout layor and dense classification layer
-Discuss Training Arguments
 \section{RoBERTa}
 While tensorflow and keras were used for all previous models, the `huggingface' library was used for the RoBERTa model. Huggingface was only discovered
 during development of RoBERTa after struggling to get RoBERTa to work using tensorflow and keras. Huggingface is a company based in New York that aims
@@ -160,8 +162,14 @@ The trasnformers library provides a model and a tokenizer for RoBERTa. the Token
 the text must be `tokenized' and converted into a list of integers. The tokenizer and model can be imported as follows:
 \begin{algorithm}
     \begin{algorithmic}
-        \STATE tokenizer = transformers.RobertaTokenizerFast.from\_pretrained(``roberta-base'')
-        \STATE model = transformers.RobertaForSequenceClassification.from\_pretrained(``roberta-base'', max\_length=512)
+        \STATE tokenizer = transformers.RobertaTokenizerFast.from\_pretrained(
+        \bindent
+        \STATE ``roberta-base'')
+        \eindent
+        \STATE model = transformers.RobertaForSequenceClassification.from\_pretrained(
+        \bindent
+        \STATE    ``roberta-base'', max\_length=512)
+        \eindent
     \end{algorithmic}
 \end{algorithm}
 
@@ -190,14 +198,8 @@ used are as follows:
     \item \textbf{push\_to\_hub} - True
 \end{itemize}
 
-TODO: explain some of these parameters\\
-The next step is to create a `Trainer' object. This object is used to train the model. This object takesthe base RoBERTa model, the training arguments,
+The next step is to create a `Trainer' object. This object is used to train the model. This object takes the base RoBERTa model, the training arguments,
 the training dataset, the testing dataset, and a method for calculating metrics. The metrics used are accuracy. 
-Discuss use of RoBERTa and how it was used
-Discuss use of huggingface library
-Discuss data preprocessing
-Discuss how training was done using huggingface
-Discuss Training Arguments
 \section{Context Aware Model}\label{sec:context_aware_model}
 The next step for this project was establishing a method of getting context for tweets. As discussed in \cref{ch:design}, the context model uses
 media sources and comments to get context for tweets. Focussing on twitter as the social media platform, the context model uses the `tweepy' library
@@ -224,7 +226,12 @@ tweet field `entities' is required. Then the `extended\_entities' expansion is u
 can be queried for URLs to the media sources.
 \begin{algorithmic}
     \begin{algorithmic}
-        \STATE tweet\_data = api.get\_tweet(tweet\_id, tweet\_fields=`entities', expansions=`extended\_entities')
+        \STATE tweet\_data = api.get\_tweet(tweet\_id, 
+        \bindent
+        \STATE tweet\_fields=`entities',
+        \STATE expansions=`extended\_entities'
+        \eindent
+        \STATE )
         \STATE media\_sources = tweet\_data.extended\_entities[``media''][0]
     \end{algorithmic}
 \end{algorithmic}
@@ -289,11 +296,7 @@ Now that the audio is extracted, it can be used with the Wav2Vec tokenizer and m
 The librosa library is used to convert the audio into a format that can be used by the tokenizer (numpy array).
 \subsection{Problems with Context Model}
 The context model increased the running time of the application by a significant amount. This was due to the extra computation required to process the media.
-Because of this, only the conversation context will be included for the Python Application. A further analysis of this will be performed in \cref{ch:evaluation}.
-Discuss use of tweepy library for getting tweets
-Explain process in detail
-Discuss how data was preprocessed for RoBERTa model
-Discuss problems with long processing times
+Because of this, only the conversation context will be included for the Python Application.
 \section{Python Application}
 \subsection{Frontend}
 PyQT was the chosen library used to create the UI for the application. This was largely influenced by the `PyQT Designer' tool. This tool gives
@@ -322,9 +325,6 @@ with the aim to be easy to use within 5 minutes of use (section \ref{sec:require
 \end{figure}
 
 TODO: discuss pros and cons of design
-Discuss PyQT and how it was used
-Discuss benefits to PyQT designer
-Discuss development of UI
 
 \subsection{Backend}
 The backend was also developed using Python. This allowed for easy integration with the frontend. In fact, the backend was developed as a standalone
@@ -334,8 +334,8 @@ While working with the `tweepy' library, multiple methods for retrieving tweets 
 method. This returns the most recent tweets from the user's home timeline. The second method was using a `StreamingClient' to listen for
 live tweets. Finally, the use of the `get\_tweets' method was used to retrieve specific tweets via ID. On top of this, as discussed in \cref{sec:context_aware_model}
 the use of the `conversation\_id' tweet\_field was used so that the retweets/replies to a tweet could be retrieved.
-For retrieving live tweets check Appendix \ref{app:live-tweets} for the code used.\\
-For retrieving users tweets check Appendix \ref{app:users-tweets} for the code used.\\\\
+For retrieving live tweets check Figure \ref{fig:live-data} in Appendix \ref{app:code} for the code used.\\
+For retrieving users tweets check Figure \ref{fig:user-data} in Appendix \ref{app:code} for the code used.\\\\
 The backend databse schema laid out in \cref{ch:design} required slight adjustments to include the ability to store tweets with the same `conversation\_id'.
 It also required the addition of a `hashtags' table to store the hashtags found in tweets sorted by topic.
 This was overlooked originally as the design was based on the assumption of using the base RoBERTa model and not the context aware model.
@@ -404,18 +404,13 @@ The next step is to create the queries to create/update/retrieve data from the d
         \end{algorithmic}
     \end{algorithm}
 \end{enumerate}
-Discuss how the backend was created
-Develop on database architecture to show how data is retrieved
-Show SQL queries used
 \section{Implementation Strategy}
 \subsection{Model Creation}
 While creating the different models for the topic detection an iterative approach was used. This allowed for the design, implementation and testing
 of each model to be done in a short period of time and then move on to the next model. This waterfall-like approach works well for model creation,
 especially with the RoBERTa model; the first iteration of the model created the base topic classification model. This model was then used
 in the second iteration to create the context aware model.
-Discuss iterative development cycle and how a waterfall sub approach was used
-Explain why this approach worked well
-backup with evidence
+TODO:backup with evidence
 \subsection{Python Application}
 For the Python application, an agile Kanban approach was used. This was partly due to the time constraints, but also because it allowed for
 any minor changes required during development to be easily implemented. The Kanban board created consisted of the following columns:
@@ -429,6 +424,4 @@ any minor changes required during development to be easily implemented. The Kanb
 Due to the fact this project was a solo project, the need for a more complex Kanban board was not required. On top of this, the solo project
 means less focus on how items move through the board is required. Usually, items would move using a given protocol (e.g. pull system). For this
 project the Kanban board was treated as a simple to-do list and allowed a visual representation of the status of the project.
-Discuss how an agile Kanban approach was used
-explain why this approach worked well
-backup with evidence
+TODO: backup with evidence
