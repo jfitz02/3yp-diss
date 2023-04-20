@@ -324,7 +324,8 @@ with the aim to be easy to use within 5 minutes of use (section \ref{sec:require
     \label{fig:ui-findtopics}
 \end{figure}
 
-TODO: discuss pros and cons of design
+\subsubsection{Analysis of UI}
+TODO: Discuss Nielsons usability principals as well as UI design.
 
 \subsection{Backend}
 The backend was also developed using Python. This allowed for easy integration with the frontend. In fact, the backend was developed as a standalone
@@ -410,7 +411,15 @@ While creating the different models for the topic detection an iterative approac
 of each model to be done in a short period of time and then move on to the next model. This waterfall-like approach works well for model creation,
 especially with the RoBERTa model; the first iteration of the model created the base topic classification model. This model was then used
 in the second iteration to create the context aware model.
-TODO:backup with evidence
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{../images/3yp timeline pres.png}
+    \caption{Iterative model creation}
+    \label{fig:iterative-model-creation}
+\end{figure}
+
+Figure \ref{fig:iterative-model-creation} shows how the project timeline was split into iterations for the model development. The dashed blue line
+shows the seperation between the 2 iterations performed in this project.
 \subsection{Python Application}
 For the Python application, an agile Kanban approach was used. This was partly due to the time constraints, but also because it allowed for
 any minor changes required during development to be easily implemented. The Kanban board created consisted of the following columns:
@@ -424,4 +433,11 @@ any minor changes required during development to be easily implemented. The Kanb
 Due to the fact this project was a solo project, the need for a more complex Kanban board was not required. On top of this, the solo project
 means less focus on how items move through the board is required. Usually, items would move using a given protocol (e.g. pull system). For this
 project the Kanban board was treated as a simple to-do list and allowed a visual representation of the status of the project.
-TODO: backup with evidence
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{../images/kanban.png}
+    \caption{Kanban board}
+    \label{fig:kanban}
+\end{figure}
+
+Figure \ref{fig:kanban} shows the Kanban board (as of 22/02/2023) used during development.

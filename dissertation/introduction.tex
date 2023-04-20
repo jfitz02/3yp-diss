@@ -4,11 +4,21 @@
 \section{Motivation}
 
 The content seen on social media varies greatly from user to user. This is because social media use recommender systems to
-show users content they are likely to be ``interested" in \cite{}. These recommender systems are based on a users past interactions \cite{}
-Typically, if a user views a certain type of post, they are likely to view similar posts in the future. This project aims
-to find the interests of a user by analysing their social media posts.\\
-
-Take a look at the following example:
+show users content they are likely to be ``interested" in \cite{}. (TODO:Discuss the use of recommender systems and how they work)
+These recommender systems are based on a users past interactions \cite{};
+If a user views a certain type of post they are likely to view similar posts in the future. With this in mind, it should be possible
+to identify a users interests through their social media posts. As a regular user of social media platforms, I have noticed that
+the content I see on my feed is always very similar (although may change over larger periods of time). Noticing this, I decided to
+play around with how I can force the social media platform to show me differing content. I noticed that (on Instagram) if I simply
+chose specific posts to look at on my `for you' page, these posts would be shown to me more often. This was a large motivating factor
+for the original aims of this project set out in my specification (Appendix \ref{app:spec}) - to analyse how differing
+`strategies' for using social media affect the content shown to the user. However, due to Terms of Service restrictions, this was not
+possible. Instead, this project will focus on identifying a users interests through their social media posts. This was an easy transition
+as the original project aims required the same prerequisites as this project; the project needs to be able to classify social media posts
+into topics. Another benefit of this project is that given permission from social media platforms in the future, it will be possible to
+extend this project to analyse `strategies' as set out in the original project aims.\\
+How can we identify interests through someones social media feed? Let's take a look at an example feed and see any patterns we can
+identify.
 \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{../images/tweet-example.png}
@@ -18,7 +28,12 @@ Take a look at the following example:
 
 This set of social media posts are taken from a user's social media feed. As a human, we can easily identify what the user is
 interested in; they are interested in Formula 1 and Food (specifically, steak). We make this assumption based on the content
-of the posts.\\
+of the posts. Noticeable patterns in \cref{fig:motivation-example} are (numbered as per the image):
+\begin{enumerate}
+    \item Posts including `food'
+    \item Posts about `sport' (specifically, Formula 1)
+    \item Meme posts
+\end{enumerate}
 
 Looking at the posts, there rises a couple questions:
 \begin{itemize}
@@ -39,7 +54,8 @@ This project will use the notion of topics to identify what the posts are about.
 This definition of a topic is a good starting point for this project. This definition is a bit too specific. If this definition were 
 to be used there would be no meaningful output from this project - due to the fact you could classify each post into its own unique
 topic. To overcome this, we will use a more general definition of a topic. Essentially, a topic comprises of a set of words that
-are related to each other.
+are related to each other and reflect a common theme/subject. For example, the topic of `food' would contain words like `steak',
+`chicken', `pizza' etc.
 
 \subsection{Problem Statement}
 The goal of this project is to be able to classify social media posts. This will allow us to identify interests through comparing
