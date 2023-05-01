@@ -1,30 +1,29 @@
 \chapter{Implementation}
 \label{ch:implementation}
 
-In this chapter, we describe the implementation of the design we described in \Cref{ch:design}. You should \textbf{not} describe every line of code in your implementation. Instead, you should focus on the interesting aspects of the implementation: that is, the most challenging parts that would not be obvious to an average Computer Scientist. Include diagrams, short code snippets, etc. for illustration. 
-
-\section{Data Collection}
-To facilitate with the fine-tuning of the BERT/RoBERTa models and the training of the LSTM/RNN models,it was necessary to collect
-a large amount of labelled data. As discussed in \ref{ch:background}, data was collected from Wikipedia and Reddit. Wikipedia was first
+\section{Data Collection}\label{sec:data-collection}
+To facilitate with the fine-tuning of the BERT/RoBERTa models and the training of the LSTM/RNN models, it was necessary to collect
+a large amount of labelled data. As discussed in \cref{ch:background}, data was collected from Wikipedia and Reddit. Wikipedia was first
 chosen due to the fact it has a large amount of data and all are labelled into categories. The one downside to Wikipedia is the style
 of writing is very formal and factual which does not represent how social media posts are written. This is why Reddit was also used.
-Reddit is a social media platform, whose subreddits give us a large amount of labelled data.\\
+Reddit is a social media platform, whose Subreddits give us a large amount of labelled data.\\
 The input data went through a preprocessing step before being used to train the models.\\
-A post/article corresponds to the input data, and the subreddit/wikipedia category corresponds to that inputs label. The data was collected
+A post/article corresponds to the input data, and the Subreddit/Wikipedia category corresponds to that inputs label. The data was collected
 using the Reddit API and Wikipedia API.\\
 After collecting all the data, there was roughly 1500 data points for each label (topic).
 \subsection{Preprocessing}
-Some preprocessing was necessary to clean the data. The preprocessing step would remove any punctuation and remove stopwords. This was done
+Some preprocessing was necessary to clean the data. The preprocessing step would remove any punctuation and remove stop words. This was done
 to reduce the size of the input while keeping the most important words.\\
-In retrospect, it could be possible that the self-attention mechanism of BERT/RoBERTa would be able to learn the context of some stopwords
+In retrospect, it could be possible that the self-attention mechanism of BERT/RoBERTa would be able to learn the context of some stop words
 and punctuation to improve the accuracy. This has been left as future work.
 \subsection{Wikipedia Data}
-Wikipedia data was colleceted using the Wikipedia API. There exists a python library called `Wikipedia-API' \cite{wikiapi} that acts as a wrapper
+Wikipedia data was collected using the Wikipedia API. There exists a python library called `Wikipedia-API' \cite{wikiapi} that acts as a wrapper
 for the Wikipedia API. The library supplies useful functionalities such as:
 \begin{itemize}
-    \item \textbf{WikiAPI.page} - Takes in a string that acts as a query for the API. In this project the query string is ``Categroy:\{topic\}'' which returns a list of articles/subcategories
-    \item \textbf{categorymembers.values()} - given the results of the page query, this function is used to return the articles/subcategories.
+    \item \textbf{WikiAPI.page} - Takes in a string that acts as a query for the API. In this project the query string is ``Category:\{topic\}'' which returns a list of articles/subcategories \cite{noauthor_wikipedia_nodate}.
+    \item \textbf{categorymembers.values()} - given the results of the page query, this function is used to return the articles/subcategories \cite{noauthor_wikipedia_nodate}.
 \end{itemize}
+\newpage
 The way WikiAPI.page works means that we may be returned another category. Because of this, a recursive function is used to take the subcategories found and get
 the articles from those subcategories. This could recurse on indefinitely, so a maximum depth of 1 was used to prevent this. A depth of 1 means that we get articles
 from the main category and the subcategories of the main category. The recursive function fetches the titles of articles so they can be queried afterwards.
@@ -48,7 +47,8 @@ from the main category and the subcategories of the main category. The recursive
 \end{algorithmic}
 \end{algorithm}
 
-Using this function the labelled data can be collected as follows:
+\newpage
+Using this function (\cref{alg:cat-members}) the labelled data can be collected as follows:
 \begin{algorithm}
     \caption{$\text{Algorithm to Retrieve Wikipedia Data}$}\label{alg:wiki-data}
     \begin{algorithmic}
@@ -72,19 +72,20 @@ Using this function the labelled data can be collected as follows:
         \STATE $\text{Write fata to csv file}$
     \end{algorithmic}
 \end{algorithm}
-
-The algorithm loops through each topic and gets the article titles from `get\_category\_members`. It then loops through each title, attempts to find text in the page,
+\newpage
+The algorithm loops through each topic and uses `get\_category\_member' to get the article titles relating to it. It then loops through each title, attempts to find text in the page,
 and if it does, it appends the preprocessed text and the topic to the data list. The data list is then written to a csv file.
 \subsection{Reddit Data}
 Reddit data was collected using the Reddit API. Their exists a python library called `PRAW` \cite{praw} that acts as a wrapper for the Reddit API.
 The library provides useful functionalities. The ones used in this project are:
 \begin{itemize}
-    \item \textbf{PRAW.reddit} - Takes in API key and secret to authenticate with Reddit API. Returns a Reddit object that can be used to query the API.
-    \item \textbf{reddit.subreddit} - Takes in a string that acts as a query for the API. In this project the query string is ``\{topic\}''.
-    \item \textbf{subreddit.hot()} - Returns a list of hot posts in the subreddit. Optionally a limit parameter can be set.
+    \item \textbf{PRAW.reddit} - Takes in API key and secret to authenticate with Reddit API. Returns a Reddit object that can be used to query the API \cite{praw}.
+    \item \textbf{reddit.subreddit} - Takes in a string that acts as a query for the API. In this project the query string is ``\{topic\}'' \cite{praw}.
+    \item \textbf{subreddit.hot()} - Returns a list of hot posts in the subreddit. Optionally a limit parameter can be set \cite{praw}.
 \end{itemize}
 These functions are used to get the data as follows:
 \begin{algorithm}
+    \caption{$\text{Algorithm to Retrieve Reddit Data}$}\label{alg:reddit-data}
     \begin{algorithmic}
         \STATE $\text{topics} \gets \text{list of topics to collect data for}$
         \STATE $\text{data} \gets \text{empty list}$
@@ -101,14 +102,14 @@ These functions are used to get the data as follows:
 \end{algorithm}
 Fetching Reddit data is much simpler than fetching Wikipedia data due to the fact that when querying a subreddit, only posts are returned and no other subreddits.
 \section{RNN and LSTM}
-For creating the RNN and LSTM models, the `tensorflow' and `keras' libraries were used. This was to take advantage of the `tensorflow` GPU support on
+For creating the RNN and LSTM models, the `Tensorflow' and `Keras' libraries were used \cite{tensorflow}\cite{keras}. This was to take advantage of the `Tensorflow` GPU support \cite{tensorflow} on
 the Department of Computer Science's (DCSs) batch compute system. Also, previous experience with these libraries made it easier to use them.\\
 For both RNN and LSTM models the data was preprocessed in the same way. The data was tokenized using the `Keras Tokenizer` \cite{keras-tokenizer}. A tokenizer
-is used to take text and convert it into a sequence of meaningful integers. The keras tokenizer has a `fit\_on\_texts` function that takes in a list of texts and
-generates a dictionary of words and their corresponding integer values \cite{tftokenizer}. The output values were one-hot encoded using pandas `get\_dummies`
+is used to take text and convert it into a sequence of meaningful integers. The Keras tokenizer has a `fit\_on\_texts` function that takes in a list of texts and
+generates a dictionary of words and their corresponding integer values \cite{tftokenizer}. The output values were one-hot encoded using Pandas `get\_dummies`
 \cite{pandas-dummies}. The data was split into training and testing sets using the `train\_test\_split`
 function from `sklearn.model\_selection` \cite{sklearn-split}.\\
-The RNN model was created using the `Sequential' model from `keras'. A sequential model allows us to build up our model by adding layers. The architecture of the
+The RNN model was created using the `Sequential' model from `Keras'. A sequential model allows us to build up our model by adding layers. The architecture of the
 model is as follows:
 \begin{itemize}
     \item \textbf{Embedding} - input\_dim=1000, output\_dim=64, input\_length=1000
@@ -117,7 +118,7 @@ model is as follows:
     \item \textbf{Dense} - units=20, activation='softmax'
 \end{itemize}
 The model was compiled using the `categorical\_crossentropy` loss function and the `adam` optimizer. The model was trained for 10 epochs with a batch size of 64.\\
-A bidirectional RNN was used to attempt to overcome the problem of unidirectionala context.\\\\
+A bidirectional RNN was used to attempt to overcome the problem of unidirectional context.\\\\
 The LSTM model was created similarly to the RNN model. However, using a bidirectional LSTM instead of a bidirectional RNN. The architecture of the model is as follows:
 \begin{itemize}
     \item \textbf{Embedding} - input\_dim=1000, output\_dim=64, input\_length=1000
@@ -127,7 +128,7 @@ The LSTM model was created similarly to the RNN model. However, using a bidirect
 \end{itemize}
 The same loss function and optimizer were used. The model was trained for 10 epochs with a batch size of 64.
 \section{BERT}
-To get the BERT model, the `tensorflow\_hub' library was used. This library gives developers access to pretrained models. The BERT model and preprocessing functions
+To get the BERT model, the `tensorflow\_hub' library was used \cite{tensorflow_hub}. This library gives developers access to pre-trained models. The BERT model and preprocessing functions
 can be imported as follows:
 \begin{algorithm}
     \begin{algorithmic}
@@ -153,13 +154,13 @@ When creating the model, these layers can be included in the model architecture.
 
 The model was compiled using the `categorical\_crossentropy` loss function and the `adam` optimizer. The model was trained for 6 epochs with a batch size of 32.
 \section{RoBERTa}
-While tensorflow and keras were used for all previous models, the `huggingface' library was used for the RoBERTa model. Huggingface was only discovered
-during development of RoBERTa after struggling to get RoBERTa to work using tensorflow and keras. Huggingface is a company based in New York that aims
-to advance artificial intelligence through open source projects. They have a library called `transformers' \cite{transformers} that provides access
-to pretrained models. A major benefit to the transformers library is it supports interoperability between different frameworks (PyTorch, TensorFlow, and JAX)
+While Tensorflow and Keras were used for all previous models, the `Huggingface' library was used for the RoBERTa model \cite{huggingface}. Huggingface was only discovered
+during development of RoBERTa after struggling to get RoBERTa to work using tensorflow and Keras. Huggingface is a company based in New York that aims
+to advance artificial intelligence through open source projects \cite{huggingface}. They have a library called `transformers' \cite{transformers} that provides access
+to pre-trained models. A major benefit to the transformers library is it supports interoperability between different frameworks (PyTorch, TensorFlow, and JAX)
 \cite{transformers}. Currently, there are 190 supported models in the transformers library including RoBERTa \cite{transformers}.\\
-The trasnformers library provides a model and a tokenizer for RoBERTa. the Tokenizer is important as RoBERTa does not directly accept text as input. Instead,
-the text must be `tokenized' and converted into a list of integers. The tokenizer and model can be imported as follows:
+The transformers library provides a model and a tokenizer for RoBERTa \cite{hug-rob}. the Tokenizer is important as RoBERTa does not directly accept text as input. Instead,
+the text must be `tokenized' and converted into a list of integers \cite{tokenizer-important}. The tokenizer and model can be imported as follows:
 \begin{algorithm}
     \begin{algorithmic}
         \STATE tokenizer = transformers.RobertaTokenizerFast.from\_pretrained(
@@ -181,8 +182,8 @@ Following this, the data must be tokenized using this tokenizer.
 \end{algorithm}
 
 The data was then split into training and testing sets by randomly shuffling the data and splitting it into $90\%$ training and $10\%$ testing.
-Then the data was converted into a pandas dataframe and converted into a PyTorch dataset - This can be used with the transformers library.\\
-The next step with Huggingface Transformers is to construct a `TrainingArugments' object. This object specifies training parameters. The parameters
+Then the data was converted into a Pandas Dataframe and converted into a PyTorch dataset - This can be used with the transformers library.\\
+The next step with Huggingface Transformers is to construct a `TrainingArguments' object. This object specifies training parameters. The parameters
 used are as follows:
 \begin{itemize}
     \item \textbf{output\_dir} - roberta-finetuned-topic
@@ -199,17 +200,17 @@ used are as follows:
 \end{itemize}
 
 The next step is to create a `Trainer' object. This object is used to train the model. This object takes the base RoBERTa model, the training arguments,
-the training dataset, the testing dataset, and a method for calculating metrics. The metrics used are accuracy. 
+the training dataset, the testing dataset, and a method for calculating metrics \cite{huggingface}. The metrics used are accuracy. 
 \section{Context Aware Model}\label{sec:context_aware_model}
 The next step for this project was establishing a method of getting context for tweets. As discussed in \cref{ch:design}, the context model uses
-media sources and comments to get context for tweets. Focussing on twitter as the social media platform, the context model uses the `tweepy' library
+media sources and comments to get context for tweets. Focussing on twitter as the social media platform, the context model uses the `Tweepy' library
 as a wrapper for the twitter API. The `Basic access' API was not a suitable option for adding context. This was due to the fact the API does not
 procide access to media sources. Because of this the `Elevated access' API was used. This allows us to get access to media sources \cite{twitter_developer_nodate}.
 \subsection{Setup tweepy}
-To setup connection to the twitter API via tweepy, the use of the `API' and `Client' objects were used. The API object gives access to v1.1 of the twitter API. v1.1 is 
+To setup connection to the twitter API via Tweepy, the use of the `API' and `Client' objects were used. The API object gives access to v1.1 of the twitter API \cite{tweepy}. v1.1 is 
 required to get access to media sources. This function call requires passing in authentication credentials. These are created via twitter developer portal
 and saved in a `.secret' file that is not included in the repository. This file is parsed and the credentials are passed into the `API' function. The
-credentials required are:
+credentials required are \cite{tweepy}:
 \begin{itemize}
     \item \textbf{consumer\_key}
     \item \textbf{consumer\_secret}
@@ -217,14 +218,14 @@ credentials required are:
     \item \textbf{access\_token\_secret}
 \end{itemize}
 
-The Client object is initiated in a similar way with the same credentials. This object gives us access to the newer v2 of the twitter API. However, as stated previously,
-this does not give access to media sources. But does give access to `conversation\_id' which allows us to find comments/threads/retweets.
+The Client object is initiated in a similar way with the same credentials. This object gives us access to the newer v2 of the twitter API \cite{tweepy}. However, as stated previously,
+this does not give access to media sources. But does give access to `conversation\_id' which allows us to find comments/threads/retweets \cite{tweepy}.
 \subsection{Get Tweets}
-Given a tweet id, the `get\_tweet' function can be used to get the tweet data from the API. This function also takes in optional parameters to specify any
-additional fields that should be returned. This is done via the `tweet\_fields' and `expansions' parameters. Because we want to get media sources, the
+Given a tweet id, the `get\_tweet' function can be used to get the tweet data from the API \cite{tweepy}. This function also takes in optional parameters to specify any
+additional fields that should be returned. This is done via the `tweet\_fields' and `expansions' parameters \cite{tweepy}. Because we want to get media sources, the
 tweet field `entities' is required. Then the `extended\_entities' expansion is used to get the media sources. The tweet data returned (in JSON format)
 can be queried for URLs to the media sources.
-\begin{algorithmic}
+\begin{algorithm}
     \begin{algorithmic}
         \STATE tweet\_data = api.get\_tweet(tweet\_id, 
         \bindent
@@ -234,15 +235,15 @@ can be queried for URLs to the media sources.
         \STATE )
         \STATE media\_sources = tweet\_data.extended\_entities[``media''][0]
     \end{algorithmic}
-\end{algorithmic}
+\end{algorithm}
 
-Following this, the URL can be used to get the media source using the ``requests'' library. This library is used to make HTTP requests. The media is saved
+Following this, the URL can be used to get the media source using the ``Requests'' library \cite{requests}. This library is used to make HTTP requests. The media is saved
 locally and the path to the media is returned. This path can then be used by the model to get the media to add context.\\
-The `get\_tweet' function can also be used to get the `conversation\_id' of a tweet. To do this, the `tweet\_fields' parameter includes `conversation\_id'.
+The `get\_tweet' function can also be used to get the `conversation\_id' of a tweet \cite{tweepy}. To do this, the `tweet\_fields' parameter includes `conversation\_id'.
 Then the `conversation\_id' can be used to get the comments/threads/retweets of a tweet via the `search\_recent\_tweets' function. This function takes in
-a query and returns a list of tweets. In this case, the query would be ``conversation\_id:\{conversation\_id\}''. The donwnside to using this function
+a query and returns a list of tweets. In this case, the query would be ``conversation\_id:\{conversation\_id\}'' \cite{tweepy}. The downside to using this function
 is that it can only return tweets if they have been posted in the last 7 days. There does exist a function to search all tweets but this requires
-a higher level of access to the API. All posts with the same `conversation\_id' are returned and are then appended onto the original tweet text.
+a higher level of access to the API \cite{academic_acc}. All posts with the same `conversation\_id' are returned and are then appended onto the original tweet text.
 \subsection{Feeding into RoBERTa}
 When all information is gathered (including media) then the tweet can be processed. First the media is processed. This is done either by using
 `Wav2Vec', if the media is a video, or `Optical Character Recognition' (OCR), if the media is an image. This turns the media into text that can be
@@ -251,10 +252,10 @@ media is stored and processed in more detail.\\
 \subsubsection{Photos and Images}
 The JSON data returned from the twitter API contains a field that displays the type of the media source (if there is one). This field can be accessed
 via the `tweet.extended\_entities[``media''][0][``type'']' field. If the type is `photo' then the media is an image. If the type is `video' then the 
-media is a video.\\
+media is a video \cite{tweepy}.\\
 For photos, the media url is fetched from the JSON data and the image is downloaded using the `requests' library and stored locally in the `media store'.
 The media store is a collection of 3 folders: `jpg', `mp4', and `wav'. jpg will store all images, mp4 will store all videos, and wav will store all converted audio.\\
-Before processing a tweet that contains an image. OCR is used to convert the image into text. The library used for OCR was `keras\_ocr'. This library allows for
+Before processing a tweet that contains an image. OCR is used to convert the image into text. The library used for OCR was `Keras\_ocr' \cite{keras_ocr}. This library allows for
 easy conversion of images into text; The library is pre-trained and can be used with only a few lines of code.
 \begin{algorithm}
     \begin{algorithmic}
@@ -266,11 +267,11 @@ easy conversion of images into text; The library is pre-trained and can be used 
 
 \subsubsection{Videos}
 Processing videos is a little more complicated. The goal is to convert any audible words in the video into text. To do this the `Wav2Vec' model is used. For this
-the `transformers' library from HuggingFace is used. This library contains a pre-trained Wav2Vec model. This requires the import of the `Wav2Vec2ForCTC' model and
+the `transformers' library from HuggingFace is used \cite{transformers}. This library contains a pre-trained Wav2Vec model. This requires the import of the `Wav2Vec2ForCTC' model and
 the `Wav2Vec2Tokenizer' tokenizer. The model is then loaded and the tokenizer is used to tokenize the audio. The audio is then passed through the model to get
 the text.\\
 Using a similar method to the one used for images, the video is downloaded and stored locally. However, this will be stored in `mp4' format. The audio needs to
-be extracted from the video. This is done using the `moviepy' library. This is simply done by loading the video and then extracting and writing the audio to
+be extracted from the video. This is done using the `Moviepy' library \cite{moviepy}. This is simply done by loading the video and then extracting and writing the audio to
 a `wav' file.
 \begin{algorithm}
     \begin{algorithmic}
@@ -283,65 +284,106 @@ a `wav' file.
 Now that the audio is extracted, it can be used with the Wav2Vec tokenizer and model. This is implemented as such:
 \begin{algorithm}
     \begin{algorithmic}
-        \STATE tokenizer = Wav2Vec2Tokenizer.from\_pretrained("facebook/wav2vec2-base-960h")
-        \STATE model = Wav2Vec2ForCTC.from\_pretrained("facebook/wav2vec2-base-960h")
+        \STATE tokenizer = Wav2Vec2Tokenizer.from\_pretrained(``facebook/wav2vec2-base-960h'')
+        \STATE model = Wav2Vec2ForCTC.from\_pretrained(``facebook/wav2vec2-base-960h'')
         \STATE input\_audio = librosa.load(audio\_path, sr=16000)[0]
-        \STATE input\_values = tokenizer(input\_audio, return\_tensor="pt").input\_values
+        \STATE input\_values = tokenizer(input\_audio, return\_tensor=``pt'').input\_values
         \STATE logits = model(input\_values).logits
         \STATE predicted\_ids = torch.argmax(logits, dim=-1)
         \STATE transcription = tokenizer.batch\_decode(predicted\_ids)
     \end{algorithmic}
 \end{algorithm}
 
-The librosa library is used to convert the audio into a format that can be used by the tokenizer (numpy array).
+The `Librosa' library is used to convert the audio into a format that can be used by the tokenizer (Numpy array).
 \subsection{Problems with Context Model}
 The context model increased the running time of the application by a significant amount. This was due to the extra computation required to process the media.
 Because of this, only the conversation context will be included for the Python Application.
 \section{Python Application}
 \subsection{Frontend}
-PyQT was the chosen library used to create the UI for the application. This was largely influenced by the `PyQT Designer' tool. This tool gives
+PyQT was the chosen library used to create the UI for the application \cite{pyqt}. This was largely influenced by the `PyQT Designer' tool \cite{pyqt}. This tool gives
 developers the ability to design a UI without writing the code for it; it gives a drag and drop tool to create the UI. This tool is very useful
 for creating a UI quickly and easily. The UI design can then be imported into the python application and the code to link the UI to the backend
 can be written.\\
 The development of the UI was heavily influenced by the original design set out in \cref{ch:design}. The UI was designed to be simple and easy to use
-with the aim to be easy to use within 5 minutes of use (section \ref{sec:requirements}). See below the final UI design:
-\begin{figure}[h]
+with the aim to be easy to use within 5 minutes of use (\Cref{sec:requirements}). See \Cref{fig:ui-wordcloud,fig:ui-toptopics,fig:ui-findtopics} for final UI designs:
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.8\textwidth]{../images/UI-dark-1-wc.png}
     \caption{Final UI design - Wordcloud}
     \label{fig:ui-wordcloud}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.8\textwidth]{../images/UI-dark-1-tt.png}
-    \caption{Final UI design - Wordcloud}
+    \caption{Final UI design - Top Topics}
     \label{fig:ui-toptopics}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.8\textwidth]{../images/UI-dark-1-ft.png}
-    \caption{Final UI design - Wordcloud}
+    \caption{Final UI design - Find Topics}
     \label{fig:ui-findtopics}
 \end{figure}
 
 \subsubsection{Analysis of UI}
-TODO: Discuss Nielsons usability principals as well as UI design.
+When creating an application it is important to consider the usability of the application. This can be done by assessing
+the application against Nielsen's usability principles \cite{nielson}.
+
+\begin{itemize}
+    \item Use simple and natural dialogue
+    \begin{itemize}
+        \item The UI minimizes the use of text and the test used is simple and easy to understand.
+    \end{itemize}
+    \item Speak the user's language
+    \begin{itemize}
+        \item The UI aims to use language that is familiar to twitter. For example, the use of `tweet'.
+    \end{itemize}
+    \item Minimize user memory load
+    \begin{itemize}
+        \item The UI is all self-explanatory and does not require the user to remember anything.
+    \end{itemize}
+    \item Be consistent
+    \begin{itemize}
+        \item The layout of each page is consistent. This is achieved by placing the buttons for each page as
+                an expandable menu on top/below the page.
+    \end{itemize}
+    \item Provide feedback
+    \begin{itemize}
+        \item The buttons on the UI provide feedback. The only negative is when opening a topics hashtags page, if there are noe hashtags, there is no feedback to announce this.
+    \end{itemize}
+    \item Provide clearly marked exits
+    \begin{itemize}
+        \item Every page has a clearly marked exit button.
+    \end{itemize}
+    \item Provide shortcuts
+    \begin{itemize}
+        \item The UI does not provide shortcuts due to the simplicity of the UI.
+    \end{itemize}
+    \item Provide good error messages
+    \begin{itemize}
+        \item The UI does not provide error messages. This is something that can be improved upon.
+    \end{itemize}
+    \item Prevent errors
+    \begin{itemize}
+        \item The UI does aim to prevent errors by minimizing user input to only buttons.
+    \end{itemize}
+\end{itemize}
 
 \subsection{Backend}
 The backend was also developed using Python. This allowed for easy integration with the frontend. In fact, the backend was developed as a standalone
 class that could be imported into the frontend and used directly. The design shown in \cref{fig:backend} shows how the backend works. The design
 ignores any implementation specific details. For example, the design just shows that there is tweets and not how the tweets are retrieved.
-While working with the `tweepy' library, multiple methods for retrieving tweets were used. The first method was to use the `get\_home\_timeline'
-method. This returns the most recent tweets from the user's home timeline. The second method was using a `StreamingClient' to listen for
-live tweets. Finally, the use of the `get\_tweets' method was used to retrieve specific tweets via ID. On top of this, as discussed in \cref{sec:context_aware_model}
+While working with the `Tweepy' library, multiple methods for retrieving tweets were used. The first method was to use the `get\_home\_timeline'
+method \cite{tweepy}. This returns the most recent tweets from the user's home timeline \cite{tweepy}. The second method was using a `StreamingClient' to listen for
+live tweets \cite{tweepy}. Finally, the use of the `get\_tweets' method was used to retrieve specific tweets via ID \cite{tweepy}. On top of this, as discussed in \cref{sec:context_aware_model}
 the use of the `conversation\_id' tweet\_field was used so that the retweets/replies to a tweet could be retrieved.
-For retrieving live tweets check Figure \ref{fig:live-data} in Appendix \ref{app:code} for the code used.\\
-For retrieving users tweets check Figure \ref{fig:user-data} in Appendix \ref{app:code} for the code used.\\\\
-The backend databse schema laid out in \cref{ch:design} required slight adjustments to include the ability to store tweets with the same `conversation\_id'.
-It also required the addition of a `hashtags' table to store the hashtags found in tweets sorted by topic.
+For retrieving live tweets check \cref{fig:live-data} in \cref{app:code} for the code used.\\
+For retrieving users tweets check \cref{fig:user-data} in \cref{app:code} for the code used.\\\\
+The backend database schema laid out in \cref{ch:design} required slight adjustments to include the ability to store tweets with the same `conversation\_id'.
 This was overlooked originally as the design was based on the assumption of using the base RoBERTa model and not the context aware model.
-Below is the updated schema
-\begin{figure}[h]
+\Cref{fig:updated-schema} shows the updated database schema
+\newpage
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.8\textwidth]{../images/updated-schema.png}
     \caption{Updated database schema}
@@ -349,95 +391,83 @@ Below is the updated schema
 \end{figure}
 
 The next step is to create the queries to create/update/retrieve data from the database in-line with the schema and backend design. Queries required:
-\begin{enumerate}
+\begin{itemize}
     \item Create tweet
     \begin{algorithm}
         \begin{algorithmic}
             \STATE INSERT INTO tweets VALUES (NULL, conversation\_id, text, tweet\_url, media\_url)
         \end{algorithmic}
     \end{algorithm}
+\end{itemize}
+
+\begin{itemize}
     \item Create conversation
     \begin{algorithm}
         \begin{algorithmic}
             \STATE INSERT INTO conversations VALUES (conversation\_id, NULL, tweetset\_id)
         \end{algorithmic}
     \end{algorithm}
+\end{itemize}
+\newpage
+\begin{itemize}
     \item Create tweetset
     \begin{algorithm}
         \begin{algorithmic}
             \STATE INSERT INTO tweetset VALUES (NULL, is\_live, NULL ($\times 20$))
         \end{algorithmic}
     \end{algorithm}
+\end{itemize}
+
+\begin{itemize}
     \item Set conversation topic
     \begin{algorithm}
         \begin{algorithmic}
             \STATE UPDATE conversations SET topic=topic WHERE conversation\_id=conversation\_id
         \end{algorithmic}
     \end{algorithm}
+\end{itemize}
+
+\begin{itemize}
     \item Set tweetset topic scores
     \begin{algorithm}
         \begin{algorithmic}
             \STATE UPDATE tweetset SET medicine\_val=medicine\_val, ... WHERE tweetset\_id=tweetset\_id
         \end{algorithmic}
     \end{algorithm}
+\end{itemize}
+\newpage
+\begin{itemize}
     \item Get hashtags for topic
     \begin{algorithm}
         \begin{algorithmic}
             \STATE SELECT hashtag FROM hashtags WHERE tweetset\_id=tweetset\_id AND tweet\_id IN (SELECT tweet\_id FROM tweets INNER JOIN conversations ON tweets.conversation\_id=conversations.conversation\_id WHERE conversation.topic=topic)
         \end{algorithmic}
     \end{algorithm}
+\end{itemize}
+
+\begin{itemize}
     \item Get top topics for tweetset
     \begin{algorithm}
         \begin{algorithmic}
             \STATE SELECT * FROM tweetset WHERE tweetset\_id=tweetset\_id
         \end{algorithmic}
     \end{algorithm}
+\end{itemize}
+
+\begin{itemize}
     \item Get tweets for a given tweetset
     \begin{algorithm}
         \begin{algorithmic}
             \STATE SELECT tweets.text, tweets.tweet\_url, tweets.media\_url, conversations.topic FROM tweets INNER JOIN conversations ON tweets.conversation\_id=conversations.conversation\_id WHERE conversations.tweetset\_id=tweetset\_id
         \end{algorithmic}
     \end{algorithm}
+\end{itemize}
+\newpage
+\begin{itemize}
     \item Get tweets for a given topic
     \begin{algorithm}
         \begin{algorithmic}
             \STATE SELECT text, tweet\_url, media\_url FROM tweetset INNER JOIN conversations ON tweets.tweetset\_id=conversations.tweetset\_id INNER JOIN tweets ON conversations.conversation\_id=tweets.conversation\_id WHERE conversations.topic=topic
         \end{algorithmic}
     \end{algorithm}
-\end{enumerate}
-\section{Implementation Strategy}
-\subsection{Model Creation}
-While creating the different models for the topic detection an iterative approach was used. This allowed for the design, implementation and testing
-of each model to be done in a short period of time and then move on to the next model. This waterfall-like approach works well for model creation,
-especially with the RoBERTa model; the first iteration of the model created the base topic classification model. This model was then used
-in the second iteration to create the context aware model.
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{../images/3yp timeline pres.png}
-    \caption{Iterative model creation}
-    \label{fig:iterative-model-creation}
-\end{figure}
-
-Figure \ref{fig:iterative-model-creation} shows how the project timeline was split into iterations for the model development. The dashed blue line
-shows the seperation between the 2 iterations performed in this project.
-\subsection{Python Application}
-For the Python application, an agile Kanban approach was used. This was partly due to the time constraints, but also because it allowed for
-any minor changes required during development to be easily implemented. The Kanban board created consisted of the following columns:
-\begin{itemize}
-    \item Ideas
-    \item Designs
-    \item In-Progress
-    \item Testing
-    \item Completed
 \end{itemize}
-Due to the fact this project was a solo project, the need for a more complex Kanban board was not required. On top of this, the solo project
-means less focus on how items move through the board is required. Usually, items would move using a given protocol (e.g. pull system). For this
-project the Kanban board was treated as a simple to-do list and allowed a visual representation of the status of the project.
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{../images/kanban.png}
-    \caption{Kanban board}
-    \label{fig:kanban}
-\end{figure}
-
-Figure \ref{fig:kanban} shows the Kanban board (as of 22/02/2023) used during development.

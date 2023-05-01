@@ -1,12 +1,11 @@
 \begin{abstract}
-    Thanks to recommender systems it is common that a users social media feed will be filled with posts relating to other posts they have
-    previously interacted with. This can lead to a user being shown posts that are similar to the posts they have already seen. In this project
-    it is viewed that this can lead to a user being shown posts that are biased towards their own opinions. This project aims to identify topics
-    that users are interested in based off of their social media feed.\\
+    Thanks to recommender systems it is common that a user's social media feed will be filled with posts relating to others they have
+    previously interacted with. In this project it is viewed that this can lead to a user being shown posts that are biased towards their own opinions.
+    This project aims to identify topics that users are interested in based off of their social media feed.\\
     First, a comparison of different Natural Language Processing models is completed to identify what model is best suited for the task
     of classifying social media posts into topics (sports, politics, etc.). It was found that RoBERTa outperformed RNNs, LSTMs, and BERT.
     RoBERTa was then fine-tuned on Reddit and Wikipedia data for this classification problem. This resulted in a model with a 
-    $69\%$ accuracy.\\
+    $71\%$ accuracy.\\
     Next, the project attempts to improve this accuracy by including context to aid with the classification process. The context that was included
     was the media attached to the post as well as the comments/threads that the post was a part of. This resulted in around a $20\%$ improvement in
     accuracy.\\

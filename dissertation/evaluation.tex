@@ -1,41 +1,38 @@
 \chapter{Evaluation}
 \label{ch:evaluation}
 
-Describe the approaches you have used to evaluate that the solution you have designed in \Cref{ch:design} and executed in \Cref{ch:implementation} actually solves the problem identified in \Cref{ch:introduction}.
-
-While you can discuss unit testing etc. you have carried here a little bit, that is the minimum. You should present data here and discuss that. This might include \emph{e.g.} performance data you have obtained from benchmarks, survey results, or application telemetry / analytics. Tables and graphs displaying this data are good.
-
 \section{RNN and LSTM}
 \label{sec:rnn-lstm}
 To analyse the performance of BERT/RoBERTa, the performance of RNN and LSTM models were analysed for comparison. All models
-were trained on the same data discussed in section \ref{sec:data-collection}. There were 2 hypotheses made about RNNs and LSTMs. 
+were trained on the same data discussed in \cref{sec:data-collection}. There were 2 hypotheses made about RNNs and LSTMs. 
 \begin{enumerate}
     \item RNNs and LSTMs will perform worse than BERT/RoBERTa
     \item LSTMs will perform better than RNNs
 \end{enumerate}
-The reasoning behind these hypotheses was discussed in chapter \ref{ch:design}.
+The reasoning behind these hypotheses was discussed in \cref{ch:design}.
 This test was performed to test this hypothesis. Below are the results of The RNN and LSTM models.
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
-    \includegraphics[width=0.6\textwidth]{../images/rnn-acc.png}
+    \includegraphics[width=0.8\textwidth]{../images/rnn-acc.png}
     \caption{RNN results}
     \label{fig:rnn-acc}
 \end{figure}
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
-    \includegraphics[width=0.6\textwidth]{../images/lstm-acc.png}
+    \includegraphics[width=0.8\textwidth]{../images/lstm-acc.png}
     \caption{LSTM results}
     \label{fig:lstm-acc}
 \end{figure}
 
-Figures \ref{fig:rnn-acc} and \ref{fig:lstm-acc} show the accuracy of the RNN and LSTM models respectively. The results show that
+\Cref{fig:rnn-acc} and \Cref{fig:lstm-acc} show the accuracy of the RNN and LSTM models respectively. The results show that
 the LSTM model outperforms the RNN model ($26\%$ accuracy compared to $48\%$ accuracy). This helps validate the second hypothesis
-that LSTMs will outperform RNNs. The other hypothesis will be discussed in section \ref{sec:bert-vs-roberta}.
+that LSTMs will outperform RNNs. The other hypothesis will be discussed in \cref{sec:bert-vs-roberta}.
 \section{BERT vs RoBERTa}
 \label{sec:bert-vs-roberta}
 During development, both BERT and RoBERTa were used to classify the posts into topics.
-BERT and RoBERTa have been compared before in \cite{DBLP:journals/corr/abs-1907-11692}. In this paper the results shown were:
-\begin{figure}
+BERT and RoBERTa have been compared before in \cite{DBLP:journals/corr/abs-1907-11692}. \Cref{fig:bert-vs-roberta-paper} shows the
+results of the paper.
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/roberta-tasks.png}
     \caption{RoBERTa vs BERT - \cite{DBLP:journals/corr/abs-1907-11692}}
@@ -47,35 +44,36 @@ were carried out on the specific topic classification task. The results of the c
 compared to see which model performed better.
 \begin{figure}[hbtp]
     \centering
-    \includegraphics[width=0.6\textwidth]{../images/bert-vs-roberta.png}
+    \includegraphics[width=0.8\textwidth]{../images/bert-vs-roberta.png}
     \caption{BERT vs RoBERTa on our problem}
     \label{fig:bert-vs-roberta}
 \end{figure}
 
-Figure \ref{fig:bert-vs-roberta} shows the confusion matrices of BERT and RoBERTa respectively for the test set - the test set was a
+\Cref{fig:bert-vs-roberta} shows the confusion matrices of BERT and RoBERTa respectively for the test set - the test set was a
 random 10\% sample of the training data. The columns of the confusion matrix represent the predicted labels and the rows represent the
 ground truth labels. It is obvious from the confusion matrices that BERT did not perform as well as RoBERTa; there are a lot of
 misclassifications. A misclassification can be identified as a cell in the confusion matrix that is not on the diagonal. Comparing this
 to the confusion matrix of RoBERTa, it is clear that RoBERTa performed much better. In fact, RoBERTa is $60\%$ more accurate than BERT
 ($43\%$ compared to $69\%$).\\
-With respect to the hypotheses made in section \ref{sec:rnn-lstm}, the first hypothesis holds form RoBERTa but not BERT. Recall the LSTM
+With respect to the hypotheses made in \cref{sec:rnn-lstm}, the first hypothesis holds form RoBERTa but not BERT. Recall the LSTM
 model achieved $48\%$ accuracy. BERT could not beat this accuracy but RoBERTa did. This was a surprising result as it was believed
 that BERT would outperform LSTM models. The reason behind this could be that BERT was trained using only 6 epochs, whereas the LSTM model
 was trained using 10 epochs.
 \section{Principal Component Analysis (PCA) of data}
-One thing to note in the RoBERTa confusion matrix in Figure \ref{fig:bert-vs-roberta} is that the model has high concentration
+One thing to note in the RoBERTa confusion matrix in \Cref{fig:bert-vs-roberta} is that the model has high concentration
 of misclassifications; the model makes the same misclassification often. After noticing this trend, it was believed that the topics
 that were commonly misclassified were similar to each other - could be grouped together.\\
 Principal Component Analysis (PCA) was used to reduce the dimensionality of the data and to allow for visualisation of the data. PCA
 was performed on the output features of RoBERTa.
-\begin{figure}
+\newpage
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/pca.png}
     \caption{PCA of data}
     \label{fig:pca}
 \end{figure}
 
-Figure \ref{fig:pca} shows the PCA of the data. The data was reduced to 3 dimensions using PCA. The data was then plotted on a 3D
+\Cref{fig:pca} shows the PCA of the data. The data was reduced to 3 dimensions using PCA. The data was then plotted on a 3D
 graph. The colours of the points represent the topics (of which some are identified in the legend). The graph is not easy to interpret;
 the only visible trend is that `Religion' and `Culture' seem to be very dissimilar to the other topics.\\
 To help interpret the data, the analysis was performed on 2 topics at a time. This time the data was reduced to 2 dimensions using
@@ -85,68 +83,68 @@ In this section, the notable findings from the PCA are discussed.
 \subsubsection{Mathematics vs Music}
 This comparison was made to act as a baseline for the rest of the comparisons. The hypothesis was that these topics would be
 dissimilar to each other.
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/math-vs-music.png}
     \caption{Mathematics vs Music}
     \label{fig:math-vs-music}
 \end{figure}
 
-Figure \ref{fig:math-vs-music} shows the PCA of the data for the `Mathematics' and `Music' topics. There is a clear separation between
+\Cref{fig:math-vs-music} shows the PCA of the data for the `Mathematics' and `Music' topics. There is a clear separation between
 the two topics. Although the data is not linearly separable, there is a strong trend that the data points of the `Mathematics' topic
-are on the bottom of the graph and the data points of the `Music' topic are on the top of the graph. Using a perceptron classifier
+are on the bottom of the graph and the data points of the `Music' topic are on the top of the graph. Using a Perceptron classifier
 on the 2 principal components, led to an accuracy of $73\%$. This is a strong indicator that the 2 topics are dissimilar to each other.
 \subsubsection{Geography vs Nature}
-Looking back at the confusion matrix of RoBERTa in Figure \ref{fig:bert-vs-roberta}, the model predicts `Geography' instead of
+Looking back at the confusion matrix of RoBERTa in \Cref{fig:bert-vs-roberta}, the model predicts `Geography' instead of
 `Nature' 6 times out of 10. This is a very high concentration of misclassifications. The hypothesis was that the topics are very similar.
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/geography-vs-nature.png}
     \caption{Geography vs Nature}
     \label{fig:geography-vs-nature}
 \end{figure}
 
-The figure shows the PCA of the data for the `Geography' and `Nature' topics. In comparison to Figure \ref{fig:math-vs-music}, there is
-no clear separation between the two topics. In fact, visually, the two topics seem to be almost identical. Using a perceptron classifier
+\Cref{fig:geography-vs-nature} shows the PCA of the data for the `Geography' and `Nature' topics. In comparison to \Cref{fig:math-vs-music}, there is
+no clear separation between the two topics. In fact, visually, the two topics seem to be almost identical. Using a Perceptron classifier
 on the 2 principal components, led to an accuracy of $52\%$. This is a strong indicator that the 2 topics are similar; the fact the classifier
 is only a minor improvement on random guessing shows that the 2 topics are similar.\\
 From this finding it was concluded that the model was not able to distinguish between the two topics. This led to the merging of the
 `Geography' and `Nature' topics into a single topic. It was decided this topic would be called `Geography'.
 \subsubsection{Technology vs Computer Science}
-Similarly to the previous comparison, the confusion matrix in Figure \ref{fig:bert-vs-roberta} shows that the model predicts `Technology'
+Similarly to the previous comparison, the confusion matrix in \cref{fig:bert-vs-roberta} shows that the model predicts `Technology'
 instead of `Computer Science' 5 times out of 10. The hypothesis was that the topics are very similar. However, the results from the 
-perceptron classifier on the 2 principal components showed a very high accuracy of $82.5\%$. This is not the result expected and caused
+Perceptron classifier on the 2 principal components showed a very high accuracy of $82.5\%$. This is not the result expected and caused
 confusion as to why the model was unable to distinguish between the two topics.\\
 To further investigate this, the data was manually inspected to attempt to reach a new hypothesis. This led to the discovery of the 
 unbalanced nature of the data. The `Technology' topic had 10 times more data points than the `Computer Science' topic. This answers why
-the perceptron classifier performed so well but the model was unable to distinguish between the two topics.\\
-The inbalance of the data was a surprise as the script used to scrape the data was designed to scrape an equal number of data points.
+the P-erceptron classifier performed so well but the model was unable to distinguish between the two topics.\\
+The imbalance of the data was a surprise as the script used to scrape the data was designed to scrape an equal number of data points.
 It was found that the search query for the `Computer Science' topic yielded no results on wikipedia leading to a small number of data
 points.\\
 It was decided to remove the computer science topic from the dataset due to the limited dataset.
 \subsubsection{News}
-In the confusion matrix for BERT in Figure \ref{fig:bert-vs-roberta}, the model predicts `News' often for `economics', `sports' and `entertainment'.
+In the confusion matrix for BERT in \cref{fig:bert-vs-roberta}, the model predicts `News' often for `economics', `sports' and `entertainment'.
 PCA analysis was performed on these topics to test their separability.
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/econ-news.png}
     \caption{Economics vs News}
     \label{fig:econ-news}
 \end{figure} 
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/sport-news.png}
     \caption{Sports vs News}
     \label{fig:sport-news}
 \end{figure} 
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/ent-news.png}
     \caption{Entertainment vs News}
     \label{fig:ent-news}
 \end{figure} 
 
-These figures show the PCA of the data for the `Economics', `Sports' and `Entertainment' topics against the `News' topic. The results for each
+\Cref{fig:econ-news,fig:sport-news,fig:ent-news} show the PCA of the data for the `Economics', `Sports' and `Entertainment' topics against the `News' topic. The results for each
 of these tests gave a separability rate of $57.5\%$, $57.5\%$ and $50\%$ respectively. These results show that the data is not easy to separate.
 This is not surprising as the `News' topic is a very broad topic and is likely to cover a lot of the other topics.\\
 Because of these findings, it was decided that the News topics should be removed.
@@ -154,20 +152,20 @@ Because of these findings, it was decided that the News topics should be removed
 \subsection{Media - Images and Videos}
 After implementing OCR and Wav2Vec, the model was tested on a set of 60 hand picked posts (3 for each topic). The updated context aware
 model was compared to the original model.
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/confusion/Complete-no-media-confusion.png}
     \caption{Confusion Matrix without Media Context}
     \label{fig:confusion}
 \end{figure}
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/confusion/Complete-Model-test.png}
     \caption{Confusion Matrix with Media Context}
     \label{fig:media}
 \end{figure}
 
-Figure \ref{fig:confusion} shows the confusion matrix of the original model. Figure \ref{fig:media} shows the confusion matrix of the
+\Cref{fig:confusion} shows the confusion matrix of the original model. \Cref{fig:media} shows the confusion matrix of the
 updated context aware model. The addition of the media context improved the accuracy of the model by $10\%$. This is a notable increase
 in accuracy. However, due to the nature of gathering this test data, it must be noted some form of bias is present. The test data was
 hand picked, so some unconscious bias may have been introduced to provide posts that would be hard to classify without the media,
@@ -180,20 +178,20 @@ have seen an improvement but would not have been able to identify the impact of 
 The model was tested on a set of 60 hand picked posts, that were different to the posts used in the previous test. The reason behind
 this is simply the API used to access the tweets was unable to access retweets and threads from posts older than 7 days - The posts
 used in the previous test were all older than 7 days when this test was performed.
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/confusion/RoBERTa-nothread-20.png}
     \caption{Confusion Matrix without Thread/Retweet Context}
     \label{fig:confusion2}
 \end{figure}
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/confusion/RoBERTa-thread-20.png}
     \caption{Confusion Matrix with Thread/Retweet Context}
     \label{fig:retweet}
 \end{figure}
 
-Figure \ref{fig:confusion2} shows the confusion matrix of the original model. Figure \ref{fig:retweet} shows the confusion matrix of the
+\Cref{fig:confusion2} shows the confusion matrix of the original model. \Cref{fig:retweet} shows the confusion matrix of the
 thread/retweet context aware model. Similarly to the previous test, the addition of the thread/retweet context improved the accuracy of
 the model by $10\%$. Again, this is a notable increase in accuracy although the same bias as the previous test is present.
 
@@ -207,4 +205,6 @@ in this project, the context is not always useful. In \Cref{ch:conclusions} we w
 sophisticated way to improve the accuracy of the model.
 
 \section{Python Application}
-TODO: explain whether requirements were met.
+The requirements set out in \Cref{ch:design} were all met. The application was able to classify posts as well as show
+users their feeds topical distribution. Also, users are able to find posts on any given topic. Overall the Application
+was a success and met all the requirements.

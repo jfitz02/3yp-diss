@@ -1,17 +1,16 @@
 \chapter{Design}
 \label{ch:design}
 
-In this chapter, we describe the overall design of our solution to the problem identified in \Cref{ch:introduction}, building on work described in \Cref{ch:background}.
-
 \section{Topic Classification}
 \label{sec:topic-classification}
-Chapter \ref{ch:background} discussed 4 different models for classifying text into topics: RNN, LSTM, BERT, and RoBERTa.
+\Cref{ch:background} discussed 4 different models for classifying text into topics: RNN, LSTM, BERT, and RoBERTa.
 The chapter also used intuition to determine which model would be expected to perform best - RoBERTa. The reason being,
 RNNs and LSTMs suffer from being unable to understand context of a whole sentence; they are limited to understanding context
 in a single direction (left to right or right to left). BERT and RoBERTa both use a technique called self-attention to overcome
 this limitation. From observing results in \cite{DBLP:journals/corr/abs-1907-11692} RoBERTa outperforms BERT in most cases.\\
 Building off of the RoBERTa model described in \Cref{ch:background}, we use the model to classify posts into topics.
 The design of this model is relatively simple due to the fact we are performing transfer learning on a pre-trained model.
+\newpage
 \begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/classification-model.png}
@@ -19,17 +18,16 @@ The design of this model is relatively simple due to the fact we are performing 
     \label{fig:roberta}
 \end{figure}
 
-As seen in the diagram, the RoBERTa model has been altered with a new classification layer.
+As seen in the diagram in \cref{fig:roberta}, the RoBERTa model has been altered with a new classification layer.
 
 \section{Adding Context}
 \subsection{What is context? and why is it important?}
-As discussed in section \rec{sec:pythia}, context is an important factor in classifying posts. In figure \ref{fig:tweet-example} there
+As discussed in \cref{sec:pythia}, context is an important factor in classifying posts. In \cref{fig:tweet-example} there
 is a tweet that would be hard to classify with the text alone. The section then goes onto show how adding the image that the tweet
-was posted with (figure \ref{fig:tweet-image}) adds more information to the post and makes it easier to classify.
+was posted with (\cref{fig:tweet-media}) adds more information to the post and makes it easier to classify.
 \subsection{Methods for adding context}
 There are many ways to add context to a post. Pythia uses Named Entity Recognition (NER) for adding context. In this project the use
 of Optical Character Recognition, Audio Transcription, and Threads/Retweets are explored.
-\subsubsection{Named Entity Recognition - NER}
 \subsubsection{Optical Character Recognition - OCR}
 Images in posts may contain text. This text adds context to the post and can be helpful in classifying the post.
 Using OCR we can extract any text from an image and use it in addition to the text of the post. This should improve the accuracy of the
@@ -47,14 +45,14 @@ extra context given by the retweets and threads can be used to help classify the
 The context aware model created in this project will use OCR, Wav2Vec, and retweets/threads to add context to posts. The extra text
 extracted from these methods will be added to the text of the post. This will be done before the post is classified. The model will then
 classified with all the additional text.
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.6\textwidth]{../images/context-aware-model.png}
     \caption{Context Aware Model}
     \label{fig:context-aware-model}
 \end{figure}
 
-The RoBERTa classification model will be the same as the one designed figure \ref{fig:roberta}. The only difference is the input
+The RoBERTa classification model will be the same as the one designed \cref{fig:roberta}. The only difference is the input
 to the model.
 \section{Python Application}
 The Python application is made to show users the topics they are interested in and allows them to compare their interests to the 
@@ -134,14 +132,14 @@ Using the user stories and chosen business case, the requirements for the applic
     \label{fig:prototype}
 \end{figure}
 \newpage
-Figure \ref{fig:prototype} shows the drawn out design of the user interface for the prototype. All 3 customer requirements are met
+\Cref{fig:prototype} shows the drawn out design of the user interface for the prototype. All 3 customer requirements are met
 with this design.\\\\
 \textbf{The user should be able to see what topics they see the most on social media/see what topics they are interested in.}\\
 In the middle display layout there are 10 percentage bars that show the percentage of the users top 5 topics, as well as the percentage
 of the top 5 topics on social media. This identifies what topics the user is interested in.\\\\
 \textbf{The user should be able to compare what they see on social media to what other people see on social media.}\\
 As mentioned above, the user is also able to see the top 5 topics on social media. This allows the user to compare what they see
-compared to what is available. On top of this, the left hand side display is created to show wordclouds of both the users social media feed
+compared to what is available. On top of this, the left hand side display is created to show Wordclouds of both the users social media feed
 and the live posts. This adds a visual representation to the differences between the users social media feed and the live posts.\\\\
 \textbf{The user should be able to reach out and find posts on topics they are not interested in.}\\
 The right hand side display allows users to select a topic by clicking on the button labelled with the topic. This will then display the text
@@ -160,7 +158,7 @@ access level does not allow for access to any media that is attached to a tweet.
 make use of images or videos to add context prior to classification. This was thought of as not being a major issue as the time taken
 to run OCR and Wav2Vec on the media would be too long to be practical.\\
 
-For requirements 1.2 and 2.2, the application needs to be able to classify the posts. As described in section \ref{sec:topic-classification},
+For requirements 1.2 and 2.2, the application needs to be able to classify the posts. As described in \cref{sec:topic-classification},
 the application will use a fine-tuned RoBERTa model for classification. For each individual post, we will store the `tweetid' and the
 `top topic', it was classified as, in the database. This information is also useful to fulfill requirement 3.1 and 3.2. The chosen database
 for this project is sqlite3. This is a lightweight database that is easy. Due to the nature of this project being a prototype, the database
@@ -173,13 +171,14 @@ representation of each topic. The application will store these values alongside 
 
 Requirement 3.2 will be achieved by taking the topic input given from the frontend request and searching the database for all posts that
 are primarily classified as that topic. Then, 4 posts will be randomly selected to be sent to the frontend for display.
-\begin{figure}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.8\textwidth]{../images/backend.png}
     \caption{Backend Architecture}
     \label{fig:backend}
 \end{figure}
-Figure \ref{fig:backend} shows the backend architecture. The points raised above can be seen in this diagram along with how the frontend
+
+\Cref{fig:backend} shows the backend architecture. The points raised above can be seen in this diagram along with how the frontend
 interacts with the backend.
 \subsubsection{Database Design}
 The database needs to be able to store the following information:
@@ -193,11 +192,11 @@ The database needs to be able to store the following information:
     \item The percentage representation of each topic in a set of posts.
     \item The conversation ID that links posts to its parent post.
 \end{itemize}
-The database will be a sqlite3 database. The schema will be as follows:
-\begin{figure}
+The database will be a sqlite3 database. The schema can be seen in \cref{fig:database}
+\begin{figure}[hbtp]
     \centering
     \includegraphics[width=0.8\textwidth]{../images/database.png}
     \caption{Database Schema}
     \label{fig:database}
 \end{figure}
-The information required can be accessed using a set of queries. The implementation specifics of these queries will be discussed in Chapter \ref{ch:implementation}.
+The information required can be accessed using a set of queries. The implementation specifics of these queries will be discussed in \cref{ch:implementation}.

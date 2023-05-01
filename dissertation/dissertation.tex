@@ -29,7 +29,7 @@
 \input{../common/titlepage.tex}
 
 \pagestyle{plain}
-
+\input{acknowledgements.tex}
 \input{abstract.tex}
 
 \tableofcontents
@@ -39,15 +39,17 @@
 \input{design.tex}
 \input{implementation.tex}
 \input{evaluation.tex}
+\input{pm.tex}
 \input{conclusions.tex}
 
-\bibliographystyle{../common/plainnat}
+\bibliographystyle{IEEEtran}
 \bibliography{../common/bibliography}
 
 \appendix
 \input{appendix.tex}
 \newpage
-\section{Specification}
-\input{../specification/updated.tex}
+\chapter{Specification}
+\label{app:spec}
+\includepdf[pages=-]{../specification/updated.pdf}
 
 \end{document}

@@ -10,7 +10,9 @@ The project aimed to:
 \end{itemize}
 
 It is clear that all of these aims were met. RoBERTa was fine-tuned for the topic classification task. The fine-tuning was done
-using labelled data from Reddit and Wikipedia. Quantification of a set of tweets was done using the mean of the probabilistic outputs
+using labelled data from Reddit and Wikipedia. On top of this, a method to add context via media and comments was attempted to improve
+accuracy. It was found that both of these context sources can increase accuracy of the mode by $\approx 5\%$.
+Quantification of a set of tweets was done using the mean of the probabilistic outputs
 from our model. A user interface was built that is able to show a comparison of topics between a users social media feed and the rest
 of the social media site. The user interface also allows users to discover posts that are dissimilar to the posts they are shown.\\
 From this, we can conclude that the project was a success.
@@ -28,14 +30,15 @@ could be to use transfer learning. This would allow us to extract more meaningfu
 have been used for image/video classification. It could be possible to train a transformer model on a dataset of images/videos
 and then use the output (or possibly a feature vector) of this model as the context for the post. Transfer learning and 
 concatenation of this model output with the RoBERTa model output could be used to create a new `context aware' model.
-\begin{figure}
+As seen in \cref{fig:transfer-learning}, The post text is fed through RoBERTa and the media is fed through Video Transformers. The outputs of both models
+are then concatenated together. This is then fed through a dense layer and a softmax layer to get the final output.
+\begin{figure}[hbtp]
     \centering
-    \includegraphics[width=0.5\textwidth]{images/transfer-learning.png}
+    \includegraphics[width=0.7\textwidth]{../images/transfer-learning.png}
     \caption{Transfer Learning with RoBERTa and Video Transformers}
     \label{fig:transfer-learning}
 \end{figure}
-As seen in Figure \ref{fig:transfer-learning}, The post text is fed through RoBERTa and the media is fed through Video Transformers. The outputs of both models
-are fed through a linear layer seperately, and then concatenated together. This is then fed through a linear layer and a softmax layer to get the final output.
+
 \subsection{Chrome Extension}
 Originally, the project was going to create a chrome extension. However, due to the time constraints of the project and the fact that I have never worked
 with JavaScript or Chrome extensions before, this was not possible. An extension to this project would be to learn these frameworks and transfer the
@@ -45,10 +48,10 @@ When first developing the idea for this project the main aim was to be able to f
 on echo chambers: ``an epistemic environment in which participants encounter beliefs and opinions that coincide with their own'' \cite{echo-chambers}.
 An Echo chamber can cause individuals to be subject to posts that agree with their ideologies, whether or not they are `true' or `representative' of all viewpoints.
 The notion of `bias' comes from the fact the posts that are shown are not truly representative of all viewpoints; the user is only shown posts that agree with their own.\\
-This project is a good baseline for analysis on bias in a users social media feed. This project allows us to identfiy what topics a user is interested in. However, this
+This project is a good baseline for analysis on bias in a users social media feed. This project allows us to identify what topics a user is interested in. However, this
 in itself does not gauge whether the feed is bias or not. A user may be interested in a topic and see posts that show all viewpoints on that topic. This is not bias.
 However, if a user is only shown posts about one side/part of the given topic, then this can be construed as bias. For example, take a user who is interested in sports.
-For this user to be non-bias they would need to see posts on a range of sports: Football, Rugby, Cricket, Ahthletics, and so on. However, if they only see posts on Football
+For this user to be non-bias they would need to see posts on a range of sports: Football, Rugby, Cricket, Athletics, and so on. However, if they only see posts on Football
 this can be seen as bias towards football.\\
 This project can be extended to find the differences within topics to identify bias that is present in a users social media feed. Some early ideas for this include:
 \begin{itemize}
